@@ -25,8 +25,8 @@
 			<br>
 			<input type = "submit" value = "Login">
 		</form>
-		Forgot your <a href = "ForgotUsername">username</a>?
+		Forgot your <a href = "forgotUsername.jsp">username</a>?
 		<br>
-		Forgot your <a href = "ForgotPassword">password</a>?
+		Forgot your <a href = "forgotPassword.jsp">password</a>?
 	</body>
 </html>
