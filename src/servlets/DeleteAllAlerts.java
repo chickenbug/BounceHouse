@@ -13,23 +13,26 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "DeleteAlert", urlPatterns = {"/DeleteAlert"})
-public class DeleteAlert extends HttpServlet {
+/**
+ * Servlet implementation class DeleteAllAlerts
+ */
+@WebServlet(name = "DeleteAllAlerts", urlPatterns = {"/DeleteAllAlerts"})
+public class DeleteAllAlerts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter writer  = response.getWriter();
 		
 		writer.println("<html>" +
 							"<head>" +
 								"<title>" +
-									"Bouncehouse Emporium - Delete Alert" +
+									"Bouncehouse Emporium - Delete Alerts" +
 								"</title>" +
 							"</head>" +
 							"<body>" +
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
-									"<h3>Delete Alert</h3>"+
+									"<h3>Delete All Alerts</h3>"+
 								"</center><br><br>" +
 								"<hr>"
 		);	
@@ -46,15 +49,13 @@ public class DeleteAlert extends HttpServlet {
 			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			deleteAlert = connection.createStatement();
 			getAlerts = connection.createStatement();
-			
-			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE ListID = " + request.getParameter("listID") + ";");
+			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE UserID = " + request.getParameter("userID") + ";");
+			affectedRows = deleteAlert.executeUpdate("DELETE FROM WishList WHERE UserID = " + request.getParameter("userID") + ";"); 
 			
 			getNumAlerts.next();
 			
-			affectedRows = deleteAlert.executeUpdate("DELETE FROM WishList WHERE ListID = " + request.getParameter("listID") + ";"); 
-					
 			if (affectedRows != getNumAlerts.getInt("Count")) {
-				throw new SQLException("An error occurred while deleting the alert, but the deletion may still have been successful.");
+				throw new SQLException("An error occurred while deleting the alerts, but the deletion may still have been successful.");
 			}
 			
 		} catch (SQLException s) {

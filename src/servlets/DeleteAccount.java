@@ -6,8 +6,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Year;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,14 +25,15 @@ public class DeleteAccount extends HttpServlet {
 		writer.println("<html>" +
 							"<head>" +
 								"<title>" +
-									"Bouncehouse Emporium - Registration" +
+									"Bouncehouse Emporium - Delete Account" +
 								"</title>" +
 							"</head>" +
 							"<body>" +
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
-									"<h3>Registration</h3>"+
-								"</center><br><br>"
+									"<h3>Account Deletion</h3>"+
+								"</center><br><br>" +
+								"<hr>"
 		);	
 		
 		Connection connection = null;
@@ -42,75 +41,49 @@ public class DeleteAccount extends HttpServlet {
 		int affectedRows = 0;
 		boolean error = false;
 		
-		if (!request.getParameter("password").equals(request.getParameter("confirmpassword"))) {
-			//passwords do not match - reject
-			response.sendRedirect("error.jsp");
-		} else if ((Year.now().getValue() - Integer.parseInt(request.getParameter("yeardropdown")) < 18)) {
-			//user is less than 18 years old - reject
-			response.sendRedirect("error.jsp"); //consider making this a different script.
-		} else if ((Integer.parseInt(request.getParameter("monthdropdown")) == 2) && (Integer.parseInt(request.getParameter("daydropdown")) > 28)) {
-			if (Year.now().isLeap() && Integer.parseInt(request.getParameter("daydropdown")) > 29) {
-				//Specified 30th or 31st of February in a leap year - reject
-				response.sendRedirect("error.jsp"); //same 
-			} else if (!Year.now().isLeap()) {
-				//specified 29th-31st of February in a non-leap year - reject 
-				response.sendRedirect("error.jsp"); //same
-			}
-		} else if (((Integer.parseInt(request.getParameter("monthdropdown")) == 4) || (Integer.parseInt(request.getParameter("monthdropdown")) == 6) || (Integer.parseInt(request.getParameter("monthdropdown")) == 9) || (Integer.parseInt(request.getParameter("monthdropdown")) == 11)) && (Integer.parseInt(request.getParameter("daydropdown")) > 30)) {
-			//specified April, June, September, or November 31
-			response.sendRedirect("error.jsp");
-		}
-		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			//username and password below are placeholders - replace them 
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/proj_2016", "root", "pw");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			statement = connection.createStatement();
-			affectedRows = statement.executeUpdate("INSERT INTO User(Address, BirthDate, City, Country, Email, FirstName, LastName, Password, Phone, PostCode, State, Username)" 
-											+   " VALUES(" 
-											+	"\"" + request.getParameter("address") + "\"\","
-											+ 	"\"" + request.getParameter("yeardropdown") + "-" + request.getParameter("monthdropdown") + "-" + request.getParameter("daydropdown") + "\","
-											+	"\"" + request.getParameter("city") + "\","
-											+	"\"" + request.getParameter("country") + "\","
-											+ 	"\"" + request.getParameter("email") + "\","
-											+	"\"" + request.getParameter("firstname") + "\","
-											+ 	"\"" + request.getParameter("lastname") + "\","
-											+ 	"\"" + request.getParameter("password") + "\","
-											+ 	"\"" + request.getParameter("phone") + "\","
-											+ 	"\"" + request.getParameter("postcode") + "\","
-											+ 	"\"" + request.getParameter("state") + "\","
-											+ 	"\"" + request.getParameter("username") + "\");");
+			affectedRows = statement.executeUpdate("DELETE FROM User WHERE UserID = " + Integer.parseInt(request.getSession().getAttribute("userID").toString()) + ";");
+			
 			if (affectedRows != 1) {
-				writer.println("Registration failed due to an unspecified error.<br>"
-						+ 		"Please click <a href = \"createAccount.jsp\">here</a> to try again if the page does not automatically redirect you after 10 seconds."
-				+		"</body>"
-			+		"</html>");
-				Thread.sleep(10000);
+				throw new SQLException("An unexpected error occurred deleting the user account, but the account may still have been successfully deleted.");
 			}
 		} catch (SQLException s) {
-			response.sendRedirect("error.jsp");
+			error = true;
+			writer.println("Account deletion failed: " + s.getMessage() + "<br>");
 		} catch (Exception e) {
-			response.sendRedirect("error.jsp");
+			error = true;
+			writer.println("Account deletion failed: " + e.getMessage() + "<br>");
 		} finally {
 			try {
-				statement.close();
-				connection.close();
+				if (statement != null) {
+					statement.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
 			} catch (SQLException s) {
-				response.sendRedirect("error.jsp");
+				error = true;
+				writer.println("An SQL exception occured while attempting to close SQL objects: " + s.getMessage() + "<br>");
 			} catch (Exception e) {
-				response.sendRedirect("error.jsp");
+				error = true;
+				writer.println("A general exception occured while attempting to close SQL objects: " + e.getMessage() + "<br>");
 			}
 			
 			if (error) {
-				response.sendRedirect("createAccount.jsp");
+				writer.println("Please click <a href = \"Modify Account?userID=" + request.getSession().getAttribute("userID") + "\">here</a> to try again."
+						+ 		"</body>"
+						+ 	"</html>"
+				);
 			} else {
-				response.sendRedirect("index.jsp");
+				response.sendRedirect("Logout");
 			}
 		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 }

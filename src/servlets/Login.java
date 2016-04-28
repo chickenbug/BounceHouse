@@ -26,35 +26,66 @@ public class Login extends HttpServlet {
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
 									"<h3>Login</h3>"+
-								"</center><br><br>"
+								"</center><br><br>" +
+								"<hr>"
 		);	
 		
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultset = null; 
 		boolean error = false;
+
+		//If for whatever reason the username or password field was not filled, print out an error and quit the servlet.
+		if(request.getParameter("username") == null) {
+			writer.println("Login failed: no username provided.<br>"
+					+	"Please click <a href = \"index.jsp\">here</a> to try again."
+					+	"</body>"
+					+ 	"</html>");
+			return;
+		} else if (request.getParameter("password") == null) {
+			writer.println("Login failed: no password provided.<br>"
+					+	"Please click <a href = \"index.jsp\">here</a> to try again."
+					+	"</body>"
+					+ 	"</html>");
+			return;
+		}
+		
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			//username and password below are placeholders - replace them 
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/proj_2016", "root", "pw");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			statement = connection.createStatement();
-			resultset = statement.executeQuery("SELECT COUNT(*) AS \"Count\" FROM User WHERE (Username = \"" + request.getParameter("username") + "\" AND Password = \"" + request.getParameter("password") + "\");");
+
+			//If username and password are properly set (that is, not null) go ahead and query the DB.
+			resultset = statement.executeQuery("SELECT COUNT(*) AS Count, UserID, Username, Role FROM User WHERE Username = \"" + request.getParameter("username") + "\" AND Password = \"" + request.getParameter("password") + "\" GROUP BY"
+					+ " UserID, Username, Role;");
 			
-			while (resultset.next()) {
+			//writer.println("Connection created. Statement created. Query Executed.<br>");
+			
+			//Assuming no screwups, there should be one row with field Count == 1. 
+			if (resultset.next()) {
+				
 				if (resultset.getInt("Count") != 1) {
-					error = true;
-					writer.println("Username and password did not match the provided credentials.<br>"
-							+ 		"Please click <a href = \"index.jsp\">here</a> to try again if the page does not automatically redirect you after 10 seconds."
-					+		"</body>"
-				+		"</html>");
-					Thread.sleep(10000);
+					throw new SQLException("Username and password did not match the provided credentials.");
 				}
+				
+				//Bind UserID, username, and role to the session.
+				request.getSession().setAttribute("userID", resultset.getInt("UserID"));
+				request.getSession().setAttribute("username", resultset.getString("username"));
+				request.getSession().setAttribute("role", resultset.getString("role"));
+				
+				//DEBUG	CODE
+				//writer.println("UserID, Username, and Role bound to user session.");
+			} else {
+				throw new SQLException("Username and password do not match, or no user exists with specified username and password.");
 			}
 		} catch (SQLException s) {
-			response.sendRedirect("error.jsp");
+			error = true;
+			writer.println("Login failed: " + s.getMessage() + "<br>");
 		} catch (Exception e) {
-			response.sendRedirect("error.jsp");
+			error = true;
+			writer.println("Login failed: " + e.getMessage() + "<br>");
+			//writer.println(e.getCause());
 		} finally {
 			try {
 				if (resultset != null) {
@@ -69,13 +100,19 @@ public class Login extends HttpServlet {
 					connection.close();
 				}
 			} catch (SQLException s) {
-				response.sendRedirect("error.jsp");
+				error = true;
+				writer.println("An SQL exception occured while attempting to close SQL objects: " + s.getMessage() + "<br>");
 			} catch (Exception e) {
-				response.sendRedirect("error.jsp");
+				error = true;
+				writer.println("A general exception occurred while attempting to close SQL objects: " + e.getMessage() + "<br>");
+				writer.println(e.getCause());
 			}
 			
 			if (error) {
-				response.sendRedirect("index.jsp");
+				writer.println("Please click <a href = \"index.jsp\">here</a> to try again."
+						+ 		"</body>"
+						+ 	"</html>"
+				);
 			} else {
 				response.sendRedirect("GetContent");
 			}
