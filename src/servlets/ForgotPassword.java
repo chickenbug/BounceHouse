@@ -52,7 +52,7 @@ public class ForgotPassword extends HttpServlet {
 			
 			resultSet = getPW.executeQuery("SELECT Email, Password, UserID FROM User WHERE Username = \"" + request.getParameter("username") + "\";");
 			
-			while (resultSet.next()) {
+			if (resultSet.next()) {
 				pw = resultSet.getString("Password");
 				userID = resultSet.getInt("UserID");
 				email = resultSet.getString("Email");
@@ -69,8 +69,10 @@ public class ForgotPassword extends HttpServlet {
 					
 			
 				if (affectedRows != 1) {
-					throw new SQLException("Failed to send user recovery email.");
+					throw new SQLException("Failed to send password recovery email to user.");
 				}
+			} else {
+				throw new SQLException("No user was found with the specified username.");
 			}
 		} catch (SQLException s) {
 			error = true;
@@ -100,7 +102,6 @@ public class ForgotPassword extends HttpServlet {
 			} catch (Exception e) {
 				error = true;
 				writer.println("A general exception occurred while attempting to close SQL objects: " + e.getMessage() + "<br>");
-				writer.println(e.getCause());
 			}
 			
 			if (error) {
@@ -109,7 +110,7 @@ public class ForgotPassword extends HttpServlet {
 						+ 	"</html>"
 				);
 			} else {
-				response.sendRedirect("GetContent");
+				response.sendRedirect("index.jsp");
 			}
 		}
 	}
