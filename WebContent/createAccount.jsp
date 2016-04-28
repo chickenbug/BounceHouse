@@ -75,9 +75,9 @@
 			<br>
 			<br>
 			Birthdate
-			<select id="daydropdown"></select> 
-			<select id="monthdropdown"></select> 
-			<select id="yeardropdown"></select> 
+			<select name="daydropdown" id = "daydropdown"></select> 
+			<select name="monthdropdown" id = "monthdropdown"></select> 
+			<select name="yeardropdown" id = "yeardropdown"></select> 
 			<script type="text/javascript">
 				window.onload=function(){
 					populatedropdown("daydropdown", "monthdropdown", "yeardropdown")
