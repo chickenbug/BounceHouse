@@ -1,12 +1,10 @@
 CREATE DATABASE IF NOT EXISTS proj2016;
 USE proj2016;
 
-DROP TABLE IF EXISTS Administrator;
 DROP TABLE IF EXISTS Auction;
 DROP TABLE IF EXISTS AutoBid;
 DROP TABLE IF EXISTS Bid;
 DROP TABLE IF EXISTS Card;
-DROP TABLE IF EXISTS CustomerRep;
 DROP TABLE IF EXISTS Email;
 DROP TABLE IF EXISTS Item;
 DROP TABLE IF EXISTS User;
@@ -22,13 +20,16 @@ CREATE TABLE User(
 	FirstName varchar(255) DEFAULT NULL,
 	LastName varchar(255) DEFAULT NULL,
 	Password varchar(255) NOT NULL,
-	Phone varchar(12) DEFAULT NULL,
+	Phone varchar(12) DEFAULT NULL,	
 	PostCode varchar(9) DEFAULT NULL,
+	Role varchar(255) NOT NULL, /* EndUser for reg users, Admin for admins, Rep for customer reps*/
 	State varchar(255) DEFAULT NULL, /* Full state name, e.g. New Jersey instead of NJ */
 	UserID int(9) NOT NULL AUTO_INCREMENT,
 	Username varchar(255) NOT NULL,
 	PRIMARY KEY(UserID)
 );
+
+INSERT INTO User VALUES(NULL,NULL,NULL,NULL,"system@bouncehouseemporium",NULL,NULL,"password",NULL,NULL,"Admin", NULL,"1","system");
 
 CREATE TABLE Item(
 	Bounciness int(2) DEFAULT 0,
@@ -40,13 +41,6 @@ CREATE TABLE Item(
 	Size varchar(2) DEFAULT NULL, /* Should be XS, S, M, L, XL */
 	SubCategory varchar(255) DEFAULT NULL,
 	PRIMARY KEY(ItemID)
-);
-
-CREATE TABLE Administrator(
-	AdminID int(9) NOT NULL AUTO_INCREMENT,
-	FirstName varchar(255) DEFAULT NULL,
-	LastName varchar(255) DEFAULT NULL,
-	PRIMARY KEY(AdminID)
 );
 
 CREATE TABLE Auction(
@@ -91,13 +85,6 @@ CREATE TABLE Card(
 	PRIMARY KEY(CardNumber)
 );
 
-CREATE TABLE CustomerRep(
-	FirstName varchar(255) DEFAULT NULL,
-	LastName varchar(255) DEFAULT NULL,
-	RepID int(9) NOT NULL AUTO_INCREMENT,
-	PRIMARY KEY(RepID)
-);
-
 /* 
 	NULLS are allowed in this table only so that a deletion from "User" won't break a record -
 	we do not want to cascade a delete (we lose records of our communication) or take no action 
@@ -130,7 +117,7 @@ CREATE TABLE UserQuestion(
 	QText varchar(8000) DEFAULT NULL,
 	RepID int(9) DEFAULT NULL,
 	UserID int(9) DEFAULT NULL,
-	FOREIGN KEY (RepID) REFERENCES CustomerRep (RepID) ON UPDATE CASCADE ON DELETE SET NULL,
+	FOREIGN KEY (RepID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,
 	PRIMARY KEY (QuestionID)
 );
@@ -139,10 +126,12 @@ CREATE TABLE Wishlist(
 	Bounciness int(2) DEFAULT 0, /* On a scale of {1, 2, ... 10} */
 	Category varchar(255) DEFAULT NULL,
 	Color varchar(255) DEFAULT NULL,
+	ItemID int(9) NOT NULL,
 	ListID int(9) NOT NULL AUTO_INCREMENT,
 	Size varchar(2) DEFAULT NULL,
 	SubCategory varchar(255) DEFAULT NULL,
 	UserID int(9) NOT NULL,
+	FOREIGN KEY (ItemID) REFERENCES Item (ItemID) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(ListID)
 );
