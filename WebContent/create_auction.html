@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Create an Auction - Bouncehouse Emporium</title>
+		<script src="js/jquery-2.2.3.js"></script> 
+		<script src="js/moment.js"></script> 
+		<script src="js/combodate.js"></script> 
+		<script type="text/javascript" src="js/create_auction.js"></script>
+	</head>
+	<body>
+        <h1>Create Auction</h1>
+		Ready to sell your bounce House?
+		Please fill out the form below and submit when you are ready.
+		<br><span id="error"></span>
+		<form action = "create_auction" method = "post">
+			<h2>Item Details</h2>
+          	  Bounciness
+            <select name="bounce" required>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+            <br>
+			<br>
+          	  Category- Bounce Type
+            <select name="category" required>
+              <option value="House">House</option>
+              <option value="Slide">Slide</option>
+              <option value="Activity">Castle</option>
+              <option value="Other">Other</option>
+            </select>
+            <br>
+			<br>
+          	  Size
+            <select name="size" required>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+            </select>
+            <br>
+			<br>
+          	  Subcategory- Theme
+            <select name="subcategory" required>
+              <option value="Standard">Standard</option>
+              <option value="Medieval">Medieval</option>
+              <option value="Pirate">Pirate</option>
+              <option value="Character">Character (eg. Spooderman)</option>
+            </select>
+            <br>
+            <br>
+            Item title
+            <br>
+            <input type = "text" name = "title" required>
+            <br>
+            <br>
+            Item description
+            <br>
+            <input type ="text" name = "description">
+			<h2>Auction Options</h2>
+			Minbid- If bids are lower than this, the item will not be sold (default is zero)
+			<br>
+			<input type = "number" name = "minbid" step = "any" required>
+			<br>
+			<br>
+			Close Date and Time- When the auction will close (DD/MM/YYYY HH:mm)
+			<br>
+			<input type="text" name="datetime" id="datetime24" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY     HH : mm" name="datetime">
+			<br>
+			<!--since the required tag does not work here I'm totes just gonna do a dt-error redirect -->
+			<script>
+			$(function(){
+			    $('#datetime24').combodate({
+			    	minYear: 2016,
+			    	maxYear: 2018,
+			    	yearDescending: false,
+		    	});  
+			});
+			</script>
+			<br><br>
+			<input type = "submit" value = "Submit">
+		</form>
+	</body>
+</html>
