@@ -30,18 +30,20 @@ CREATE TABLE User(
 );
 
 INSERT INTO User VALUES(NULL,NULL,NULL,NULL,"system@bouncehouseemporium",NULL,NULL,"password",NULL,NULL,"Admin", NULL,"1","system");
+INSERT INTO User VALUES('610 Taylor Rd', '1994-07-07', 'Piscataway', 'USA', 'tgoetjen@gmail.com', 'Tim','Goetjen', 'password', '5555555', 
+	'08901','Admin','NJ',2,'tgoetjen');
 
 CREATE TABLE Item(
 	Bounciness int(2) DEFAULT 0,
 	Category varchar(255) DEFAULT NULL,
 	Color varchar(255) DEFAULT NULL,
 	Description varchar(3000) DEFAULT NULL,
-	Image varchar(255) DEFAULT NULL, /* This should be a URL to the image's location */
 	ItemID int(9) NOT NULL AUTO_INCREMENT,
 	Size varchar(2) DEFAULT NULL, /* Should be XS, S, M, L, XL */
 	SubCategory varchar(255) DEFAULT NULL,
 	PRIMARY KEY(ItemID)
 );
+
 
 CREATE TABLE Auction(
 	AuctionID int(9) NOT NULL AUTO_INCREMENT,
@@ -54,6 +56,16 @@ CREATE TABLE Auction(
 	FOREIGN KEY (ItemID) REFERENCES Item (ItemID) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(AuctionID)
+);
+
+CREATE TABLE Alert(
+	AlertID int(9) NOT NULL AUTO_INCREMENT,
+	AuctionID int(9) NOT NULL,
+	UserID int(9) NOT NULL,
+	Completed int(1) NOT NULL,
+	FOREIGN KEY (AuctionID) REFERENCES Auction (AuctionID) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY(AlertID)
 );
 
 CREATE TABLE AutoBid(
@@ -75,6 +87,9 @@ CREATE TABLE Bid(
 	PRIMARY KEY(BidID)
 );
 
+/*
+ 	Probably do not need this table in practice.
+ */
 CREATE TABLE Card(
 	CardNumber bigint(16) NOT NULL,
 	ExpirationDate date DEFAULT NULL,
@@ -135,3 +150,33 @@ CREATE TABLE Wishlist(
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(ListID)
 );
+
+DELIMITER !
+
+DROP TRIGGER IF EXISTS welcomeEmail!
+
+CREATE TRIGGER welcomeEmail AFTER INSERT ON User
+FOR EACH ROW BEGIN
+	INSERT INTO Email(Content,Recipient,RecipientID,Sender,SenderID,SendTime) VALUES("Congratulations on making an account with Bouncehouse Emporium! We hope you'll find exactly what you're looking for. Please let us know if you need anything!",NEW.Email,NEW.UserID,"system@bouncehouseemporium","1", NOW());
+END!
+
+DROP TRIGGER IF EXISTS insertAlert!
+
+CREATE TRIGGER insertAlert AFTER INSERT ON Auction
+FOR EACH ROW BEGIN
+	IF (NEW.ItemID IN (SELECT ItemID FROM Wishlist)) THEN
+		INSERT INTO Alert(AuctionID, UserID, Completed)
+        SELECT DISTINCT NEW.AuctionID, UserID, NEW.Completed FROM WishList WHERE ItemID = NEW.ItemID;
+	END IF;
+END!
+
+DROP TRIGGER IF EXISTS updateAlert! 
+
+CREATE TRIGGER updateAlert AFTER UPDATE ON Auction
+FOR EACH ROW BEGIN
+	IF (NEW.Completed <> OLD.Completed) THEN
+		UPDATE Alert SET Completed = NEW.Completed WHERE AuctionID = NEW.AuctionID;
+	END IF;
+END!
+
+DELIMITER ;
