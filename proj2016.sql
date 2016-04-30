@@ -22,7 +22,7 @@ CREATE TABLE User(
 	Password varchar(255) NOT NULL,
 	Phone varchar(12) DEFAULT NULL,
 	PostCode varchar(9) DEFAULT NULL,
-	Role varchar(255) DEFAULT NULL, /* EndUser for reg users, Admin for admins, Rep for customer reps*/
+	Role varchar(255) NOT NULL, /* EndUser for reg users, Admin for admins, Rep for customer reps*/
 	State varchar(255) DEFAULT NULL, /* Full state name, e.g. New Jersey instead of NJ */
 	UserID int(9) NOT NULL AUTO_INCREMENT,
 	Username varchar(255) NOT NULL,
@@ -33,13 +33,12 @@ INSERT INTO User VALUES('610 Taylor Rd', 7-7-1994, 'Piscataway', 'USA', 'tgoetje
 	'08901','Admin','NJ',1,'tgoetjen');
 
 CREATE TABLE Item(
+	ItemID int(9) NOT NULL AUTO_INCREMENT,
 	Bounciness int(2) DEFAULT 0,
 	Category varchar(255) DEFAULT NULL,
-	Color varchar(255) DEFAULT NULL,
+	Title varchar(3000) DEFAULT NULL,
 	Description varchar(3000) DEFAULT NULL,
-	Image varchar(255) DEFAULT NULL, /* This should be a URL to the image's location */
-	ItemID int(9) NOT NULL AUTO_INCREMENT,
-	Size varchar(2) DEFAULT NULL, /* Should be XS, S, M, L, XL */
+	Size varchar(2) DEFAULT NULL, 
 	SubCategory varchar(255) DEFAULT NULL,
 	PRIMARY KEY(ItemID)
 );
@@ -52,15 +51,29 @@ CREATE TABLE Auction(
 	MinBid float(7) DEFAULT 0,
 	UserID int(9) NOT NULL,
 	WinBid float(7) DEFAULT NULL,
+	WinnerID int(9) DEFAULT NULL,
+	FOREIGN KEY (WinnerID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (ItemID) REFERENCES Item (ItemID) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(AuctionID)
 );
 
-CREATE TABLE AutoBid(
+CREATE TABLE Alert(
+	AlertID int(9) NOT NULL AUTO_INCREMENT,
 	AuctionID int(9) NOT NULL,
+	UserID int(9) NOT NULL,
+	Completed int(1) NOT NULL,
+	FOREIGN KEY (AuctionID) REFERENCES Auction (AuctionID) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY(AlertID)
+);
+
+CREATE TABLE AutoBid(
 	AutoBidID int(9) NOT NULL AUTO_INCREMENT,
+	AuctionID int(9) NOT NULL,
+	UserID int(9) NOT NULL,
 	MaxBid float(7) DEFAULT 0,
+	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (AuctionID) REFERENCES Auction (AuctionID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(AutoBidID)
 );
@@ -118,7 +131,7 @@ CREATE TABLE UserQuestion(
 	QText varchar(8000) DEFAULT NULL,
 	RepID int(9) DEFAULT NULL,
 	UserID int(9) DEFAULT NULL,
-	FOREIGN KEY (RepID) REFERENCES CustomerRep (RepID) ON UPDATE CASCADE ON DELETE SET NULL,
+	FOREIGN KEY (RepID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,
 	PRIMARY KEY (QuestionID)
 );
@@ -134,3 +147,33 @@ CREATE TABLE Wishlist(
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(ListID)
 );
+
+DELIMITER !
+
+DROP TRIGGER IF EXISTS welcomeEmail!
+
+CREATE TRIGGER welcomeEmail AFTER INSERT ON User
+FOR EACH ROW BEGIN
+	INSERT INTO Email(Content,Recipient,RecipientID,Sender,SenderID,SendTime) VALUES("Congratulations on making an account with Bouncehouse Emporium! We hope you'll find exactly what you're looking for. Please let us know if you need anything!",NEW.Email,NEW.UserID,"system@bouncehouseemporium","1", NOW());
+END!
+
+DROP TRIGGER IF EXISTS insertAlert!
+
+CREATE TRIGGER insertAlert AFTER INSERT ON Auction
+FOR EACH ROW BEGIN
+	IF (NEW.ItemID IN (SELECT ItemID FROM Wishlist)) THEN
+		INSERT INTO Alert(AuctionID, UserID, Completed)
+        SELECT DISTINCT NEW.AuctionID, UserID, NEW.Completed FROM WishList WHERE ItemID = NEW.ItemID;
+	END IF;
+END!
+
+DROP TRIGGER IF EXISTS updateAlert! 
+
+CREATE TRIGGER updateAlert AFTER UPDATE ON Auction
+FOR EACH ROW BEGIN
+	IF (NEW.Completed <> OLD.Completed) THEN
+		UPDATE Alert SET Completed = NEW.Completed WHERE AuctionID = NEW.AuctionID;
+	END IF;
+END!
+
+DELIMITER ;
