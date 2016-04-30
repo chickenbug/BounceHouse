@@ -3,7 +3,6 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -12,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.SQLConnector;
 
 @WebServlet(name = "CreateAlert", urlPatterns = {"/CreateAlert"})
 public class CreateAlert extends HttpServlet {
@@ -47,8 +48,8 @@ public class CreateAlert extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			
+			connection = SQLConnector.getConnection();
 			selectItem = connection.createStatement();
 			insertAlert = connection.createStatement();
 			
@@ -62,6 +63,9 @@ public class CreateAlert extends HttpServlet {
 			while (hasAlertForThisItem.next()) {
 				//Error checking code: if the user already made an alert for this item, then don't insert again.
 				if (hasAlertForThisItem.getInt("Count") > 0) {
+					insertAlert.close();
+					selectItem.close();
+					connection.close();
 					throw new SQLException("An alert already exists for this user and item.");
 				}
 			}
@@ -80,6 +84,10 @@ public class CreateAlert extends HttpServlet {
 				);
 				
 				if (affectedRows != 1) {
+					insertAlert.close();
+					selectItem.close();
+					connection.close();
+					item.close();
 					throw new SQLException("Alert was not inserted or insertion was accidentally repated.<br>");
 				}
 			}

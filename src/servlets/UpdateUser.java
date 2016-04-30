@@ -3,16 +3,15 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Year;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.SQLConnector;
 
 /**
  * Servlet implementation class UpdateUser
@@ -108,9 +107,7 @@ public class UpdateUser extends HttpServlet {
 		}
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			//username and password below are placeholders - replace them 
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 			
 			affectedRows = statement.executeUpdate(update + " WHERE UserID = " + request.getSession().getAttribute("userID") + ";");

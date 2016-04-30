@@ -3,7 +3,6 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.servlet.ServletException;
@@ -11,6 +10,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.SQLConnector;
 
 /**
  * Servlet implementation class DeleteAccount
@@ -46,8 +47,7 @@ public class DeleteAccount extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 			affectedRows = statement.executeUpdate("DELETE FROM User WHERE UserID = " + Integer.parseInt(request.getSession().getAttribute("userID").toString()) + ";");
 			

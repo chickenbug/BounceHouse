@@ -3,7 +3,6 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.SQLConnector;
 
 /**
  * Servlet implementation class RecievedAlerts
@@ -54,16 +55,10 @@ public class RecievedAlerts extends HttpServlet {
 		Statement getAuctions = null;
 		ResultSet alerts = null;
 		ResultSet auctions = null;
-		boolean error = false;
 				
 		//Open connection, create statement, and process request.
 		try {
-			//Opens the driver or something lol
-			Class.forName("com.mysql.jdbc.Driver");
-					
-			//username and password below are placeholders - replace them 
-			//Set up connection to local MySQL server using proper credentials. Create a new query.
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			getAlerts = connection.createStatement();
 			getAuctions = connection.createStatement();
 					
@@ -88,10 +83,8 @@ public class RecievedAlerts extends HttpServlet {
 							+ "<br>");
 					
 				} catch (SQLException s) {
-					error = true;
 					writer.println("Failed to get alert list: " + s.getMessage() + "<br>");
 				} catch (Exception e) {
-					error = true;
 					writer.println("Failed to get alert list: " + e.getMessage() + "<br>");
 					//writer.println(e.getCause());
 				} finally {

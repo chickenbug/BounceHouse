@@ -3,7 +3,6 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -12,6 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.SQLConnector;
+
 import java.time.*;
 
 @WebServlet(name = "ForgotPassword", urlPatterns = {"/ForgotPassword"})
@@ -45,9 +47,8 @@ public class ForgotPassword extends HttpServlet {
 		int userID = 0;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			//username and password below are placeholders - replace them 
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			
+			connection = SQLConnector.getConnection();
 			getPW = connection.createStatement();
 			
 			resultSet = getPW.executeQuery("SELECT Email, Password, UserID FROM User WHERE Username = \"" + request.getParameter("username") + "\";");

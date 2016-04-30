@@ -7,6 +7,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.SQLConnector;
+
 import java.sql.*;
 
 @WebServlet(name = "Login", urlPatterns = {"/Login"})
@@ -49,11 +52,10 @@ public class Login extends HttpServlet {
 					+ 	"</html>");
 			return;
 		}
-		
+		//TODO return here and clean this up 
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 
 			//If username and password are properly set (that is, not null) go ahead and query the DB.
