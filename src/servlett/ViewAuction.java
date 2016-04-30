@@ -33,7 +33,6 @@ public class ViewAuction extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try{
-			System.out.println("Finding yo auction");
 			int auctionID = Integer.parseInt(request.getQueryString());
 			if(auctionID < 0) throw new NumberFormatException();
 			
@@ -45,7 +44,6 @@ public class ViewAuction extends HttpServlet {
 			
 			request.setAttribute("a", a);
 			request.setAttribute("i", i);
-			System.out.println(i.title);
 			request.getRequestDispatcher("WEB-INF/auction.jsp?" + auctionID).forward(request, response);
 		}
 		catch(NumberFormatException| NoSuchElementException e ){

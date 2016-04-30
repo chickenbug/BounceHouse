@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Auction, model.Item"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -50,25 +50,45 @@
 	<tr>
 	<td>Status</td>
 	<td>
-	<%
-		if(a.completed == 1) out.write("closed");
-		else out.write("open");	
-	%>
+		<%
+			if(a.completed == 1) out.write("closed");
+			else out.write("open");	
+		%>
 	</td>
 	</tr>
 	<tr>
-	<td>Min Bid</td>
-	<td></td>
-	</tr>
-	<tr>
 	<td>Seller</td>
-	<td></td>
+	<td>TBD</td>
 	</tr>
 	<tr>
-	<td>Winning Bid</td>
-	<td></td>
+	<td>Top Bid</td>
+	<td><%=a.win_bid%></td>
 	</tr>
 	</table>
+	
+	<h1>Bidding Area</h1>
+	<form action="bid" method="post" onsubmit="return confirm('Confirm Bid?');">
+	Standard-Bid
+	<input type = "number" name = "bid" step = "any" min="<%=a.win_bid%>" required>
+	<input type="hidden" name="auction" value="<%=a.AuctionID%>">
+	
+	<input type="submit" value="bid">
+	</form>
+	<form action="auto_bid" method="post" onsubmit="return confirm('Confirm Auto-Bid?');">
+	Autobid- If someone else has the winning bid, Autobid(TM pending) will bid $1 higher for you until upperLimit is reached <br>
+	----------- If you already have an Autobid setup, this will change the maxBid on your current autobid
+	<br>
+	MaxBid
+	<input type = "number" name = "MaxBid" step = "any" required>
+	<input type="submit" value="SetUp Autobid">
+	</form>
+	
+	
+	
+	
+	<a style="padding-right:10px" href="./create_auction"> Create Another Auction   </a>
+	<a href="./main.jsp"> Home </a>
+	
 
 </body>
 </html>
