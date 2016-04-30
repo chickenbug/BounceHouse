@@ -19,6 +19,10 @@ public class ViewAlerts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+		}
+		
 		PrintWriter writer  = response.getWriter();
 		
 		writer.println("<html>" +
@@ -139,6 +143,9 @@ public class ViewAlerts extends HttpServlet {
 						+ "</center>"
 						+ "<center>"
 						+ "Please click <a href = \"ViewAlerts?userID=" + request.getParameter("userID") + "\">here</a> to try again."
+						+ "<br>"
+						+ "<br>"
+						+ "<a href = \"GetContent\">Return To Main Page</a>"
 						+ "</center>"
 						+ "</body>"
 						+ "</html>"

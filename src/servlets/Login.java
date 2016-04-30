@@ -105,7 +105,6 @@ public class Login extends HttpServlet {
 			} catch (Exception e) {
 				error = true;
 				writer.println("A general exception occurred while attempting to close SQL objects: " + e.getMessage() + "<br>");
-				writer.println(e.getCause());
 			}
 			
 			if (error) {

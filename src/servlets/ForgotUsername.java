@@ -108,7 +108,7 @@ public class ForgotUsername extends HttpServlet {
 			}
 			
 			if (error) {
-				writer.println("Please click <a href = \"ForgotUsername?email=" + request.getParameter("email") + "\">here</a> to try again."
+				writer.println("Please click <a href = \"ForgotUsername\">here</a> to try again."
 						+ 		"</body>"
 						+ 	"</html>"
 				);

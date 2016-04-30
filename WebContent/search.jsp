@@ -32,6 +32,10 @@
 			<br>
 			<select name = "category">
 				<option value = "" selected>No Preference</option>
+				<option value = "House">House</option>
+				<option value = "Slide">Slide</option>
+				<option value = "Activity">Castle</option>
+				<option value = "Other">Other</option>
 			</select>
 			<br>
 			<br>
@@ -53,11 +57,6 @@
 			</select>
 			<br>
 			<br>
-			Description - please enter any words or phrases that would describe an item you want, e.g. "spacious" or "durable".
-			<br>
-			<input type = "text" name = "desc">
-			<br>
-			<br>
 			Size
 			<br>
 			<select name = size>
@@ -74,6 +73,10 @@
 			<br>
 			<select name = "subcategory">
 				<option value = "" selected>No Preference</option>
+				<option value = "Standard">Standard</option>
+				<option value = "Medieval">Medieval</option>
+				<option value = "Pirate">Pirate</option>
+				<option value = "Character">Character (e.g. Spooderman)</option>
 			</select>
 			<br>
 			<br>

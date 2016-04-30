@@ -14,4 +14,4 @@
 		<input type = Submit value = "Recover Username">
 	</form>
 </body>
-</html>l>
+</html>

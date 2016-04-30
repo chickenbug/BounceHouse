@@ -13,10 +13,10 @@
 				var month = document.getElementById(month)
 				var year = document.getElementById(year)
 			
-				for (var i = 0; i<31; i++)
-					day.options[i]=new Option(i+1, i+1)
+				for (var i = 31; i>0; i--)
+						day.options[i-1]=new Option(i, i)
 			
-				day.options[today.getDate()] = new Option(today.getDate(), today.getDate(), true, true)
+				day.options[today.getDate()-1] = new Option(today.getDate(), today.getDate(), true, true)
 			
 				for (var m = 0; m<12; m++)
 					month.options[m] = new Option(monthtext[m], m+1)

@@ -21,6 +21,10 @@ public class DeleteAllAlerts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+		}
+		
 		PrintWriter writer  = response.getWriter();
 		
 		writer.println("<html>" +

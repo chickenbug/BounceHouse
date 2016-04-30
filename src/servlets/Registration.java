@@ -19,6 +19,10 @@ public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getParameter("username") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+		}
+		
 		PrintWriter writer  = response.getWriter();
 		
 		writer.println("<html>" +
@@ -41,82 +45,80 @@ public class Registration extends HttpServlet {
 		int affectedRows = 0;
 		boolean error = false;
 		
-		writer.println(parseMonth(request.getParameter("monthdropdown")));
-		
 		/*
 		 * Do all error checking with regards to input fields here. Invalid or null inputs are reasons to terminate.
 		 */
-		if (request.getParameter("address") == null) {
+		if (request.getParameter("address") == null || request.getParameter("address").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("city") == null) {
+		} else if (request.getParameter("city") == null || request.getParameter("city").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("country") == null) {
+		} else if (request.getParameter("country") == null || request.getParameter("country").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("email") == null) {
+		} else if (request.getParameter("email") == null || request.getParameter("email").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("firstname") == null) {
+		} else if (request.getParameter("firstname") == null || request.getParameter("firstname").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("lastname") == null) {
+		} else if (request.getParameter("lastname") == null || request.getParameter("lastname").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("password") == null) {
+		} else if (request.getParameter("password") == null || request.getParameter("password").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("phone") == null) {
+		} else if (request.getParameter("phone") == null || request.getParameter("phone").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("postcode") == null) {
+		} else if (request.getParameter("postcode") == null || request.getParameter("postcode").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("state") == null) {
+		} else if (request.getParameter("state") == null || request.getParameter("state").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
 					+	"</html>"
 			);
 			return;	
-		} else if (request.getParameter("username") == null) {
+		} else if (request.getParameter("username") == null || request.getParameter("username").equals("")) {
 			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 					+	"</body>"
@@ -140,10 +142,10 @@ public class Registration extends HttpServlet {
 					+	"</html>"
 			);
 			return;
-		} else if (request.getParameter("monthdropdown").equals("February") && (Integer.parseInt(request.getParameter("daydropdown")) > 28)) {
+		} else if ((request.getParameter("monthdropdown").equals("2") && (Integer.parseInt(request.getParameter("daydropdown")) > 28))) {
 			if (Year.now().isLeap() && Integer.parseInt(request.getParameter("daydropdown")) > 29) {
 				//Specified 30th or 31st of February in a leap year - reject
-				writer.println("Account creation failed: you have specified an invalid birthday.<br>"
+				writer.println("Account creation failed: you have specified an invalid date for your birthday.<br>"
 						+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
 						+	"</body>"
 						+	"</html>"
@@ -158,7 +160,7 @@ public class Registration extends HttpServlet {
 				);
 				return;
 			}
-		} else if ((request.getParameter("monthdropdown").equals("April") || request.getParameter("monthdropdown").equals("June") || request.getParameter("monthdropdown").equals("September") || request.getParameter("monthdropdown").equals("November")) && (Integer.parseInt(request.getParameter("daydropdown")) > 30)) {
+		} else if ((request.getParameter("monthdropdown").equals("4") || request.getParameter("monthdropdown").equals("6") || request.getParameter("monthdropdown").equals("9") || request.getParameter("monthdropdown").equals("11")) && (Integer.parseInt(request.getParameter("daydropdown")) > 30)) {
 			//specified April, June, September, or November 31
 			writer.println("Account creation failed: you have specified an invalid birthday.<br>"
 					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
@@ -186,7 +188,7 @@ public class Registration extends HttpServlet {
 				affectedRows = statement.executeUpdate("INSERT INTO User(Address, BirthDate, City, Country, Email, FirstName, LastName, Password, Phone, PostCode, Role, State, Username)" 
 												+   " VALUES(" 
 												+	"\"" + request.getParameter("address") + "\","
-												+ 	"\"" + request.getParameter("yeardropdown") + "-" + parseMonth(request.getParameter("monthdropdown")) + "-" + request.getParameter("daydropdown") + "\","
+												+ 	"\"" + request.getParameter("yeardropdown") + "-" + request.getParameter("monthdropdown") + "-" + request.getParameter("daydropdown") + "\","
 												+	"\"" + request.getParameter("city") + "\","
 												+	"\"" + request.getParameter("country") + "\","
 												+ 	"\"" + request.getParameter("email") + "\","
@@ -228,7 +230,7 @@ public class Registration extends HttpServlet {
 			}
 			
 			if (error) {
-				writer.println("Please click <a href = \"index.jsp\">here</a> to try again."
+				writer.println("Please click <a href = \"createAccount.jsp\">here</a> to try again."
 						+ 		"</body>"
 						+ 	"</html>"
 				);
@@ -240,38 +242,5 @@ public class Registration extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
-	}
-	
-	private String parseMonth(String month) throws IOException {
-		
-		if (month == null) {
-			throw new IOException("There was an error parsing your birthdate.");
-		} else if (month.equals("January")) {
-			return "01";
-		} else if (month.equals("February")) {
-			return "02";
-		} else if (month.equals("March")) {
-			return	"03";
-		} else if (month.equals("April")) {
-			return	"04";
-		} else if (month.equals("May")) {
-			return "05";
-		} else if (month.equals("June")) {
-			return "06";
-		} else if (month.equals("July")) {
-			return"07";
-		} else if (month.equals("August")) {
-			return "08";
-		} else if (month.equals("September")) {
-			return "09";
-		} else if (month.equals("October")) {
-			return "10";
-		} else if (month.equals("November")) {
-			return "11";
-		} else if (month.equals("December")) {
-			return "12";
-		}
-		
-		return "00";
 	}
 }

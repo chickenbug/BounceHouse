@@ -38,6 +38,9 @@ public class GetContent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+		}
 		
 		//PrintWriter to write to HTML.
 		PrintWriter writer  = response.getWriter();
@@ -103,6 +106,7 @@ public class GetContent extends HttpServlet {
 		Connection connection = null;
 		Statement getItems = null;
 		ResultSet items = null;
+		boolean error = false;
 		
 		//Open connection, create statement, and process request.
 		try {
@@ -152,9 +156,6 @@ public class GetContent extends HttpServlet {
 				writer.println("<tr>"
 							+		"<td><center>" + items.getString("Category") + "</center></td>"
 							+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
-							+		"<td><center><img src = \"" + items.getString("Image") + "\" alt = "
-									+ "\"Item #" + items.getInt("ItemID") + " height = \"150\""
-									+ " width = \"150\"></center></td>"
 							+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 							+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
 							+		"<td><center>" + items.getString("Color") + "</center></td>"
@@ -169,28 +170,13 @@ public class GetContent extends HttpServlet {
 					+ "<br>"
 					+ "<br>");
 			
-		} catch (SQLException sql) {
-			//Catch exception thrown by statement or connection.
-			writer.println("The server encountered an error when trying to retrieve the item list.<br>");
-			if (sql.getCause() != null) {
-				writer.println(sql.getCause() + "<br>");
-			}
-			if (sql.getMessage() != null) {
-				writer.println(sql.getMessage() + "<br>");
-			}
-			sql.printStackTrace();
-			writer.println("<br>");
-		} catch(Exception e) {
-			//Catch exception thrown by Class.forName
-			writer.println("The server encountered an error while attempting to load the page.<br> ");
-			if (e.getCause() != null) {
-				writer.println(e.getCause() + "<br>");
-			}
-			if (e.getMessage() != null) {
-				writer.println(e.getMessage() + "<br>");
-			}
-			e.printStackTrace();
-			writer.println("<br>");
+		} catch (SQLException s) {
+			error = true;
+			writer.println("Failed to get item list: " + s.getMessage() + "<br>");
+		} catch (Exception e) {
+			error = true;
+			writer.println("Failed to get item list: " + e.getMessage() + "<br>");
+			//writer.println(e.getCause());
 		} finally {
 			//Close resultset, statement, connection.
 			try {

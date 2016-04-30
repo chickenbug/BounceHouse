@@ -18,6 +18,10 @@ public class CreateAlert extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+		}
+		
 		PrintWriter writer  = response.getWriter();
 		
 		writer.println("<html>" +
@@ -62,20 +66,22 @@ public class CreateAlert extends HttpServlet {
 				}
 			}
 			
-			item = selectItem.executeQuery("SELECT Bounciness, Category, Color, Size, Subcategory FROM Item WHERE ItemID = " + request.getParameter("itemID"));
+			item = selectItem.executeQuery("SELECT Bounciness, Category, Color, Size, Subcategory FROM Item WHERE ItemID = " + request.getParameter("itemID") + ";");
 			while (item.next()) {
-				affectedRows = insertAlert.executeUpdate("INSERT INTO WishList(Bounciness, Category, Color, Size, Subcategory, UserID)" 
+				affectedRows = insertAlert.executeUpdate("INSERT INTO Wishlist(Bounciness, Category, Color, ItemID, Size, Subcategory, UserID)" 
 							+   " VALUES(" 
 							+	item.getInt("Bounciness") + ","
 							+	"\"" +	item.getString("Category")											+ "\","
 							+	"\"" +	item.getString("Color") 											+ "\","
+							+	request.getParameter("itemID")												+ ","
 							+	"\"" +	item.getString("Size") 												+ "\","
 							+	"\"" +	item.getString("Subcategory")										+ "\","
-							+ 	Integer.parseInt(request.getSession().getAttribute("userID").toString())	+ ");");
+							+ 	Integer.parseInt(request.getSession().getAttribute("userID").toString())	+ ");"
+				);
 				
-					if (affectedRows != 1) {
-						throw new SQLException("Alert was not inserted or insertion was accidentally repated.<br>");
-					}
+				if (affectedRows != 1) {
+					throw new SQLException("Alert was not inserted or insertion was accidentally repated.<br>");
+				}
 			}
 		} catch (SQLException s) {
 			error = true;
@@ -111,7 +117,10 @@ public class CreateAlert extends HttpServlet {
 						+ 	"</html>"
 				);
 			} else {
-				response.sendRedirect("GetContent");	
+				writer.println("Alert creation successful.<br> You can click <a href = \"GetContent\">here</a> to go back to the main page."
+						+ 		"</body>"
+						+ 	"</html>"
+				);
 			}
 		}
 		
