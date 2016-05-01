@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Timer;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.sql.*;
 
+import model.CloseAuction;
 import model.SQLConnector;
 
 /**
@@ -86,13 +88,21 @@ public class CreateAuction extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect("create_auction.html");
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+			return;
+		}
+			request.getRequestDispatcher(("WEB-INF/create_auction.html")).forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+			return;
+		}
 		try {
 			int bounce = Integer.parseInt(request.getParameter("bounce"));
 			String category = request.getParameter("category");
@@ -113,6 +123,8 @@ public class CreateAuction extends HttpServlet {
 			else{
 				int ItemID = insert_item(bounce,category,size,subcategory,title,description, response);
 				int AuctionID = insert_auction(ItemID, minbid, t, userID, response);
+				Timer time = new Timer();
+				time.schedule(new CloseAuction(AuctionID), t);
 				response.sendRedirect("auction?" + AuctionID);
 			}
 		} catch (ParseException e1) {

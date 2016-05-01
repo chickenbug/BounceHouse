@@ -9,19 +9,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import model.Auction;
 import model.AutoBid;
-import model.Bid;
 
 /**
- * Servlet implementation class Bid
+ * Servlet implementation class MakeAutoBid
  */
-@WebServlet("/bid")
-public class MakeBid extends HttpServlet {
+@WebServlet("/MakeAutoBid")
+public class MakeAutoBid extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MakeBid() {
+    public MakeAutoBid() {
         super();
     }
 
@@ -33,22 +32,25 @@ public class MakeBid extends HttpServlet {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
-		float amount = Float.parseFloat(request.getParameter("bid"));
+		
+		float maxBid = Float.parseFloat(request.getParameter("MaxBid"));
 		int auctionID = Integer.parseInt(request.getParameter("auction"));
+		int userID = (Integer)request.getSession().getAttribute("userID");
 		
 		Auction a = Auction.findAuction(auctionID);
-		if( a == null || a.completed == 1 || a.win_bid + 1 > amount){
-			Bid.insertBid(auctionID, (Integer)request.getSession().getAttribute("userID"), amount);
-			request.setAttribute("type", "");
-			request.setAttribute("value", Float.toString(amount));
-			request.setAttribute("auction", Integer.toString(auctionID));
-			AutoBid.runAutobids(auctionID);
-			request.getRequestDispatcher("bid_success.jsp").forward(request, response);
+		if(a == null || a.completed == 1 || !AutoBid.insertAutobid(auctionID, userID, maxBid)){
+			response.sendError(400,"Cannot Create Autobid on Closed or nonexistent auction");
+			return;
 		}
-		else{
-			response.sendError(400, "Error Making Bid. Auction does not exist, Auction is closed, or bid amount too low");
-		}
-		return;
+		
+		AutoBid.runAutobids(auctionID);
+		
+		request.setAttribute("type", "Auto-");
+		request.setAttribute("value", Float.toString(maxBid));
+		request.setAttribute("auction", Integer.toString(auctionID));
+		request.getRequestDispatcher("bid_success.jsp").forward(request, response);;
+		
+		
 	}
 
 }

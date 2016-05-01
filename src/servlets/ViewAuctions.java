@@ -25,6 +25,7 @@ public class ViewAuctions extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		//PrintWriter to write to HTML.
@@ -138,9 +139,5 @@ public class ViewAuctions extends HttpServlet {
 					);
 				}
 		}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
 
 }

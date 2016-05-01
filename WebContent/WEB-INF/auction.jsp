@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ page import="model.Auction, model.Item, model.User"%>
+<%@ page import="model.Auction, model.Item, model.User, model.Bid"%>
 <!DOCTYPE html">
 <html>
 <head>
@@ -64,30 +64,38 @@
 	<td>Top Bid</td>
 	<td><%=a.win_bid%></td>
 	</tr>
+	<tr>
+	<td>Top Bid Owner</td>
+	<td>
+	<%
+		if(Bid.maxBidUsername(a.AuctionID) != null) out.write(Bid.maxBidUsername(a.AuctionID));
+		else out.write("none");	
+	%>
+	</td>
+	</tr>
 	</table>
 	
 	<h1>Bidding Area</h1>
+	All Bids or AutoBids must be at least $1 more than the current top bid <br><br>
 	<form action="bid" method="post" onsubmit="return confirm('Confirm Bid?');">
-	Standard-Bid
-	<input type = "number" name = "bid" step = "any" min="<%=a.win_bid%>" required>
-	<input type="hidden" name="auction" value="<%=a.AuctionID%>">
-	
-	<input type="submit" value="bid">
+		<b>Standard Bid-</b><br>
+		<input type = "number" name = "bid" step = "any" min="<%=a.win_bid + 1%>" required>
+		<input type="hidden" name="auction" value="<%=a.AuctionID%>">
+		<%if(a.completed == 0) out.write("<input type=\"submit\" value=\"bid\">"); %>
 	</form>
-	<form action="auto_bid" method="post" onsubmit="return confirm('Confirm Auto-Bid?');">
-	Autobid- If someone else has the winning bid, Autobid(TM pending) will bid $1 higher for you until upperLimit is reached <br>
-	----------- If you already have an Autobid setup, this will change the maxBid on your current autobid
+	<form action="MakeAutoBid" method="post" onsubmit="return confirm('Confirm Auto-Bid?');">
+	<b>Autobid-</b><br>
+	If someone else has the winning bid, Autobid(TM pending) will bid $1 higher for you until upperLimit is reached <br>
+	If you already have an Autobid setup, this will replace your current autobid. <br>
 	<br>
 	MaxBid
-	<input type = "number" name = "MaxBid" step = "any" required>
-	<input type="submit" value="SetUp Autobid">
+	<input type = "number" name = "MaxBid" step = "any" min="<%=a.win_bid+1%>" required>
+	<input type="hidden" name="auction" value="<%=a.AuctionID%>">
+	<%if(a.completed == 0) out.write("<input type=\"submit\" value=\"SetUp Autobid\">"); %>
 	</form>
 	
-	
-	
-	
 	<a style="padding-right:10px" href="./create_auction"> Create Another Auction   </a>
-	<a href="./main.jsp"> Home </a>
+	<a href="./GetContent"> Home </a>
 	
 
 </body>

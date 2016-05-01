@@ -21,6 +21,10 @@ public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.sendRedirect("createAccount.jsp");
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("username") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
 		}
@@ -50,84 +54,8 @@ public class Registration extends HttpServlet {
 		/*
 		 * Do all error checking with regards to input fields here. Invalid or null inputs are reasons to terminate.
 		 */
-		if (request.getParameter("address") == null || request.getParameter("address").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("city") == null || request.getParameter("city").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("country") == null || request.getParameter("country").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("email") == null || request.getParameter("email").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("firstname") == null || request.getParameter("firstname").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("lastname") == null || request.getParameter("lastname").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("password") == null || request.getParameter("password").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("phone") == null || request.getParameter("phone").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("postcode") == null || request.getParameter("postcode").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("state") == null || request.getParameter("state").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (request.getParameter("username") == null || request.getParameter("username").equals("")) {
-			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
-					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;	
-		} else if (!request.getParameter("password").equals(request.getParameter("confirmpassword"))) {
+
+		if (!request.getParameter("password").equals(request.getParameter("confirmpassword"))) {
 			//passwords do not match - reject
 			writer.println("Account creation failed: the passwords do not match.<br>"
 						+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
@@ -240,9 +168,5 @@ public class Registration extends HttpServlet {
 				response.sendRedirect("index.jsp");
 			}
 		}
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
 	}
 }
