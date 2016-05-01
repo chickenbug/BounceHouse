@@ -16,17 +16,17 @@
 			<br>
 			View Total Earnings
 		</a>
-		<a href = "earningsByType.jsp">
+		<a href = "viewEarningsByType.jsp">
 			<br>
 			<br>
 			View Earnings By Type
 		</a> 
-		<a href = "bestSellers.jsp">
+		<a href = "ViewBestSellingItems">
 			<br>
 			<br>
 			View Best Selling Items
 		</a> 
-		<a href = "bestBuyers.jsp">
+		<a href = "ViewBestBuyers">
 			<br>
 			<br>
 			View Best Buyers

@@ -19,69 +19,64 @@ import javax.servlet.http.HttpServletResponse;
 import model.SQLConnector;
 
 /**
- * Servlet implementation class ViewAuctions
+ * Servlet implementation class ViewBestBuyers
  */
-@WebServlet(name = "ViewTotalEarnings", urlPatterns = {"/ViewTotalEarnings"})
-public class ViewTotalEarnings extends HttpServlet {
+@WebServlet(name = "ViewBestBuyers", urlPatterns ={"/ViewBestBuyers"})
+public class ViewBestBuyers extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null||!request.getSession().getAttribute("role").equals("admin")) {
+		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
 		}
-
-		//PrintWriter to write to HTML.
 		PrintWriter writer  = response.getWriter();
-
-		/*
-		 * Set up page title and links. The structure of the println statement is only to mimic 
-		 * the structure of a formatted HTML document. This structure is only maintained below 
-		 * when it is conducive to readability; when this structure inhibits code readability,
-		 * I do not use it.
-		 */
+		
 		writer.println("<html>" 
 				+	"<head>" 
 				+		"<title>" 
-				+			"Bouncehouse Emporium - Total Earnings" 
+				+			"Bouncehouse Emporium - Best Buyers" 
 				+		"</title>" 
 				+	"</head>" 
 				+	"<body>" 
 				+		"<center>" 
 				+			"<h1>Bouncehouse Emporium</h1>" 
-				+			"<h3>Total Earnings</h3>"
+				+			"<h3> Best Buyers </h3>"
+				+	"<h4>	<a href = \"salesReports.jsp\">Return to sales reports page</a> </h4>"
+				+			"<hr>"
+				+			"<table border = 1 width = 100%>"
 				);
-
-		//Create objects for connections, statements, and resultsets.
+		
 		Connection connection = null;
-		Statement getAuctions = null;
-		ResultSet auctions = null;
+		Statement getEarnings = null;
+		ResultSet earnings = null;
 
 		//Open connection, create statement, and process request.
 		try {
 			connection = SQLConnector.getConnection();
-			getAuctions = connection.createStatement();
+			getEarnings = connection.createStatement();
 
-			auctions = getAuctions.executeQuery("SELECT A.WinBid,U.Username FROM Auction A,User U WHERE Completed = 1 AND A.UserID=U.UserID;");
-
-			Map<String,Integer> users = new HashMap<String,Integer>();
-			while(auctions.next()){
-				if(users.containsKey(auctions.getString("U.username"))){
-					users.put(auctions.getString("U.username"),users.get(auctions.getString("U.username"))+auctions.getInt("A.WinBid"));
-				}
-				else users.put(auctions.getString("U.username"), auctions.getInt("A.WinBid"));
-			}
-			int total = 0;
-			for(Entry<String, Integer> entry: users.entrySet()){
-				total+=entry.getValue();
-			}
-			writer.println(	"<h4> $"+total+"</h4>"
-					+	"<h4>	<a href = \"salesReports.jsp\">Return to sales reports page</a> </h4>"
-					+			"<hr>"
-					+			"<table border = 1 width = 100%>" 
-					+	"<tr>"
+			earnings = getEarnings.executeQuery("SELECT U.username FROM User U, Auction A WHERE A.completed=1 AND U.userid=A.winnerid");
+			/*
+			 * Process request and output HTML.
+			 */
+			writer.println("<tr>"
 					+		"<td><center><span style = \"font-weight:bold\"> Username </span></center></td>"
-					+		"<td><center><span style = \"font-weight:bold\"> Earnings </span></center></td>");
-			for(Entry<String, Integer> entry: users.entrySet()){
+					+		"<td><center><span style = \"font-weight:bold\"> Number of Items Bought </span></center></td>");
+			
+			Map<String,Integer> count = new HashMap<String,Integer>();
+
+			while(earnings.next()){
+				if(!count.containsKey(earnings.getString("U.username"))){
+					count.put(earnings.getString("U.username"), 1);
+				}
+				else{
+					count.put(earnings.getString("U.username"), count.get(earnings.getString("U.username"))+1);
+				}
+			}
+			for(Entry<String, Integer> entry: count.entrySet()){
 				writer.println("<tr><td><center>" + entry.getKey() + "</center></td>"
 						+		"<td><center>" + entry.getValue() + "</center></td>");
 			}
@@ -99,11 +94,11 @@ public class ViewTotalEarnings extends HttpServlet {
 		} finally {
 			//Close resultset, statement, connection.
 			try {
-				if (auctions != null) {
-					auctions.close();
+				if (earnings != null) {
+					earnings.close();
 				}
-				if (getAuctions != null) {
-					getAuctions.close();
+				if (getEarnings != null) {
+					getEarnings.close();
 				}
 				if (connection != null) {
 					connection.close();
@@ -129,7 +124,11 @@ public class ViewTotalEarnings extends HttpServlet {
 		}
 	}
 
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

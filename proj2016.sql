@@ -22,7 +22,7 @@ CREATE TABLE User(
 	Password varchar(255) NOT NULL,
 	Phone varchar(12) DEFAULT NULL,
 	PostCode varchar(9) DEFAULT NULL,
-	Role varchar(255) NOT NULL, /* EndUser for reg users, Admin for admins, Rep for customer reps*/
+	Role varchar(255) NOT NULL, /* EndUser for reg users, admin for admins, rep for customer reps*/
 	State varchar(255) DEFAULT NULL, /* Full state name, e.g. New Jersey instead of NJ */
 	UserID int(9) NOT NULL AUTO_INCREMENT,
 	Username varchar(255) NOT NULL,

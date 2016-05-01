@@ -21,8 +21,8 @@ import model.SQLConnector;
 /**
  * Servlet implementation class ViewEarningsByType
  */
-@WebServlet("/ViewEarningsByType")
-public class ViewEarningsByType extends HttpServlet {
+@WebServlet(name = "ViewEarningsByUser", urlPatterns = {"/ViewEarningsByUser"})
+public class ViewEarningsByUser extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	/**
@@ -37,13 +37,14 @@ public class ViewEarningsByType extends HttpServlet {
 		writer.println("<html>" 
 				+	"<head>" 
 				+		"<title>" 
-				+			"Bouncehouse Emporium - Total Earnings By Type" 
+				+			"Bouncehouse Emporium - Earnings By User" 
 				+		"</title>" 
 				+	"</head>" 
 				+	"<body>" 
 				+		"<center>" 
 				+			"<h1>Bouncehouse Emporium</h1>" 
-				+			"<h3>Total Earnings By Type</h3>"
+				+			"<h3>Total Earnings By User</h3>"
+				+	"<h4>	<a href = \"viewEarningsByType.jsp\">Return to earnings by type page</a> </h4>"
 				+			"<hr>"
 				+			"<table border = 1 width = 100%>"
 				);
@@ -56,19 +57,27 @@ public class ViewEarningsByType extends HttpServlet {
 		try {
 			connection = SQLConnector.getConnection();
 			getEarnings = connection.createStatement();
-			String query = "";
-			
-			if (request.getParameter("sortBy") == null || request.getParameter("sortBy").equals("noSort")) {
-				query.concat("ORDER BY ItemID ASC"); //sort in terms of itemID number low to high if no sorting specified.
-			} else if (request.getParameter("sortBy").equals("bouncinessASC")) { //Bounciness low to high
-				query.concat("ORDER BY Bounciness ASC;");
-			}
+
+			earnings = getEarnings.executeQuery("SELECT U.username, A.winbid FROM Item I, Auction A, User U WHERE A.completed=1 AND "
+					+ "A.ItemID=I.ItemID AND A.UserID=U.UserID AND U.role=\"EndUser\""); 
 			/*
 			 * Process request and output HTML.
 			 */
 			writer.println("<tr>"
 					+		"<td><center><span style = \"font-weight:bold\"> Username </span></center></td>"
 					+		"<td><center><span style = \"font-weight:bold\"> Earnings </span></center></td>");
+			
+			Map<String,Integer> users = new HashMap<String,Integer>();
+			while(earnings.next()){
+				if(users.containsKey(earnings.getString("U.username"))){
+					users.put(earnings.getString("U.username"),users.get(earnings.getString("U.username"))+earnings.getInt("A.winbid"));
+				}
+				else users.put(earnings.getString("U.username"), earnings.getInt("A.winbid"));
+			}
+			for(Entry<String, Integer> entry: users.entrySet()){
+				writer.println("<tr><td><center>" + entry.getKey() + "</center></td>"
+						+		"<td><center>" + entry.getValue() + "</center></td>");
+			}
 
 			writer.println("</table>"
 					+ "<br>"
