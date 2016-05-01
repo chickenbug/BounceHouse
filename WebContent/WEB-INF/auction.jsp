@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ page import="model.Auction, model.Item"%>
+<%@ page import="model.Auction, model.Item, model.User"%>
 <!DOCTYPE html">
 <html>
 <head>
@@ -58,7 +58,7 @@
 	</tr>
 	<tr>
 	<td>Seller</td>
-	<td>TBD</td>
+	<td><%=User.findUName(a.user_id)%></td>
 	</tr>
 	<tr>
 	<td>Top Bid</td>

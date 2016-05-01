@@ -62,7 +62,7 @@ public class GetContent extends HttpServlet {
 						+		"<center>" 
 						+			"<h1>Bouncehouse Emporium</h1>" 
 						+			"<h3>Central Hub</h3>" 
-/*------------------>*/	+			"<a href = \"PLACEHOLDER\">Create An Auction</a> | " //Add link for auction creation here - Haikinh
+/*------------------>*/	+			"<a href = \"create_auction\">Create An Auction</a> | " //Add link for auction creation here - Haikinh
 						+			"<a href = \"ViewAuctions\">View Auctions</a> | " 
 						+ 			"<a href = \"search.jsp\">Search</a> | "
 /*------------------->*/+			"<a href = \"PLACEHOLDER\">Ask A Question/Contact Us</a> | " //Add link for Q/A page here - Tim
@@ -91,8 +91,6 @@ public class GetContent extends HttpServlet {
 						+				"<option value = \"bouncinessDESC\">Bounciness High to Low</option>"
 						+				"<option value = \"categoryASC\">Category A to Z</option>"
 						+				"<option value = \"categoryDESC\">Category Z to A</option>"
-						+				"<option value = \"colorASC\">Color A to Z</option>"
-						+				"<option value = \"colorDESC\">Color Z to A</option>"
 						+				"<option value = \"sizeASC\">Size XS to XL</option>"
 						+				"<option value = \"sizeDESC\">Size XL to XS</option>"
 						+				"<option value = \"subcategoryASC\">Subcategory A to Z</option>"
@@ -101,6 +99,15 @@ public class GetContent extends HttpServlet {
 						+			"<input type = \"submit\" value = \"Apply\">"
 						+		"</form>"
 						+		"<table border = 1 width = 100%>"
+						+		"<tr>"
+						+		"<td><center>Category</center></td>"
+						+		"<td><center>Subcategory</center></td>"
+						+		"<td><center>Title</center></td>"
+						+ 		"<td><center>Desciprtion</center></td>"
+						+ 		"<td><center>Bounciness</center></td>"
+						+		"<td><center>Size</center></td>"
+						+		"<td><center>Create an Alert</center></td>"
+						+ 		"</tr>" 
 		);	
 		
 		//Create objects for connections, statements, and resultsets.
@@ -125,10 +132,6 @@ public class GetContent extends HttpServlet {
 				query.concat("ORDER BY Category ASC;");
 			} else if (request.getParameter("sortBy").equals("categoryDESC")) { //Category Z to A
 				query.concat("ORDER BY Category DESC;");
-			} else if (request.getParameter("sortBy").equals("colorASC")) { //Color A to Z
-				query.concat("ORDER BY Color ASC;");
-			} else if (request.getParameter("sortBy").equals("colorDESC")) { // Color Z to A
-				query.concat("ORDER BY Color DESC;");
 			} else if (request.getParameter("sortBy").equals("sizeASC")) { //Size XS to XL
 				query.concat("ORDER BY Size ASC;");
 			} else if (request.getParameter("sortBy").equals("sizeDESC")) { //Size XL to XS
@@ -151,9 +154,9 @@ public class GetContent extends HttpServlet {
 				writer.println("<tr>"
 							+		"<td><center>" + items.getString("Category") + "</center></td>"
 							+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
+							+		"<td><center>" + items.getString("Title") + "</center></td>"
 							+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 							+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
-							+		"<td><center>" + items.getString("Color") + "</center></td>"
 							+		"<td><center>" + items.getString("Size") + "</center></td>"
 							+		"<td><center><a href = \"CreateAlert?itemID=" + items.getInt("ItemID") + "\">Create Alert For This Item</a></center></td>"
 							+ 	"</tr>" 

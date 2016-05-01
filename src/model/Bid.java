@@ -18,6 +18,23 @@ public class Bid {
 		this.userID = userID;
 	}
 	
+	public static String maxBidUsername(int auctionID){
+		try{
+			Connection con = SQLConnector.getConnection();
+			Statement s = con.createStatement();
+			ResultSet rs = s.executeQuery(
+					"SELECT U.Username FROM User U, Bid B WHERE B.auctionID = " + auctionID 
+					+ " AND B.Amount = (SELECT MAX(AMOUNT) FROM Bid WHERE auctionID = " + auctionID 
+					+ "B.UserID = U.UserID");
+			if(!rs.next()) return null;
+			return rs.getString(1);
+		}
+		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
+			System.out.println("error finding username");
+			return null;
+		}
+	}
+	
 	public static boolean insertBid(int auctionID, int userID, float amount){
 		try {
 			String sql = "INSERT INTO Bid (AuctionID, UserID, Amount, BidTime) VALUES (?,?,?,?)";
