@@ -11,7 +11,7 @@
 	<center>Sales Reports</center>
 </h1>
 <center>
-	<a href = "totalEarnings.jsp">
+	<a href = "ViewTotalEarnings">
 			<br>
 			<br>
 			View Total Earnings
