@@ -38,15 +38,15 @@ public class MakeBid extends HttpServlet {
 		
 		Auction a = Auction.findAuction(auctionID);
 		if( a == null || a.completed == 1 || a.win_bid + 1 > amount){
+			response.sendError(400, "Error Making Bid. Auction does not exist, Auction is closed, or bid amount too low");
+		}
+		else{
 			Bid.insertBid(auctionID, (Integer)request.getSession().getAttribute("userID"), amount);
 			request.setAttribute("type", "");
 			request.setAttribute("value", Float.toString(amount));
 			request.setAttribute("auction", Integer.toString(auctionID));
 			AutoBid.runAutobids(auctionID);
 			request.getRequestDispatcher("bid_success.jsp").forward(request, response);
-		}
-		else{
-			response.sendError(400, "Error Making Bid. Auction does not exist, Auction is closed, or bid amount too low");
 		}
 		return;
 	}
