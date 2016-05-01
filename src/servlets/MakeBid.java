@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.Auction;
 import model.AutoBid;
 import model.Bid;
 
@@ -32,15 +33,22 @@ public class MakeBid extends HttpServlet {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
-		
 		float amount = Float.parseFloat(request.getParameter("bid"));
 		int auctionID = Integer.parseInt(request.getParameter("auction"));
-		Bid.insertBid(auctionID, (Integer)request.getSession().getAttribute("userID"), amount); 
-		request.setAttribute("type", "");
-		request.setAttribute("value", Float.toString(amount));
-		request.setAttribute("auction", Integer.toString(auctionID));
-		AutoBid.runAutobids(auctionID);
-		request.getRequestDispatcher("bid_success.jsp").forward(request, response);
+		
+		Auction a = Auction.findAuction(auctionID);
+		if( a == null || a.completed == 1 || a.win_bid + 1 > amount){
+			Bid.insertBid(auctionID, (Integer)request.getSession().getAttribute("userID"), amount);
+			request.setAttribute("type", "");
+			request.setAttribute("value", Float.toString(amount));
+			request.setAttribute("auction", Integer.toString(auctionID));
+			AutoBid.runAutobids(auctionID);
+			request.getRequestDispatcher("bid_success.jsp").forward(request, response);
+		}
+		else{
+			response.sendError(400, "Error Making Bid. Auction does not exist, Auction is closed, or bid amount too low");
+		}
+		return;
 	}
 
 }

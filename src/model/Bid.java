@@ -35,8 +35,21 @@ public class Bid {
 		}
 	}
 	
+	/**
+	 * inserts a bid into the bidtable given auctionID, userID and amount
+	 * @param auctionID
+	 * @param userID
+	 * @param amount
+	 * @return false on failure, true on success
+	 */
 	public static boolean insertBid(int auctionID, int userID, float amount){
 		try {
+			Auction a = Auction.findAuction(auctionID);
+			if(a == null || a.completed == 1){
+				System.out.println("Cannot Make Bid. Auction does not exist or is closed.");
+				return false;
+			}
+			
 			String sql = "INSERT INTO Bid (AuctionID, UserID, Amount, BidTime) VALUES (?,?,?,?)";
 			Connection c = SQLConnector.getConnection();
 			PreparedStatement s = c.prepareStatement(sql);

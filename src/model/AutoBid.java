@@ -82,7 +82,6 @@ public class AutoBid {
 			int current_wID = Auction.findWinID(auctionID);
 			if(current_wbid == -1 || bidlist == null || current_wID == -1) return false;
 			
-			
 			boolean possible_autobid = true;
 			while(possible_autobid){
 				possible_autobid = false;

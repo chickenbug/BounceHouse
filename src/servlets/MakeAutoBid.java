@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.Auction;
 import model.AutoBid;
 
 /**
@@ -35,8 +36,10 @@ public class MakeAutoBid extends HttpServlet {
 		float maxBid = Float.parseFloat(request.getParameter("MaxBid"));
 		int auctionID = Integer.parseInt(request.getParameter("auction"));
 		int userID = (Integer)request.getSession().getAttribute("userID");
-		if(!AutoBid.insertAutobid(auctionID, userID, maxBid)){
-			response.sendRedirect("error.html");
+		
+		Auction a = Auction.findAuction(auctionID);
+		if(a == null || a.completed == 1 || !AutoBid.insertAutobid(auctionID, userID, maxBid)){
+			response.sendError(400,"Cannot Create Autobid on Closed or nonexistent auction");
 			return;
 		}
 		

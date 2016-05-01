@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.TimerTask;
 
 public class Auction {
 	public int AuctionID;
@@ -14,8 +15,9 @@ public class Auction {
 	public float min_bid;
 	public int user_id;
 	public float win_bid;
+	public int winID;
 	
-	public Auction(int AuctionID, Timestamp close_date, int completed, int itemID, float min_bid, int user_id, float win_bid){
+	public Auction(int AuctionID, Timestamp close_date, int completed, int itemID, float min_bid, int user_id, float win_bid, int winID){
 		this.AuctionID = AuctionID;
 		this.close_date = close_date;
 		this.completed = completed;
@@ -23,6 +25,7 @@ public class Auction {
 		this.min_bid = min_bid;
 		this.user_id = user_id;
 		this.win_bid = win_bid;
+		this.winID = winID;
 	}
 	
 	public static int findWinID(int auctionID){
@@ -65,7 +68,6 @@ public class Auction {
 			System.out.println("Invalid Query Param (Negative or non Integer)");
 			return false;
 		}
-		
 	}
 	
 	public static Auction findAuction(int auctionID){
@@ -81,7 +83,8 @@ public class Auction {
 					rs.getInt("ItemID"),
 					rs.getFloat("MinBid"),
 					rs.getInt("UserID"),
-					rs.getFloat("WinBid"));
+					rs.getFloat("WinBid"),
+					rs.getInt("WinnerID"));
 			return a;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){

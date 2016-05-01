@@ -76,23 +76,22 @@
 	</table>
 	
 	<h1>Bidding Area</h1>
+	All Bids or AutoBids must be at least $1 more than the current top bid <br><br>
 	<form action="bid" method="post" onsubmit="return confirm('Confirm Bid?');">
-	<b>Standard Bid-</b><br>
-	<input type = "number" name = "bid" step = "any" min="<%=a.win_bid%>" required>
-	<input type="hidden" name="auction" value="<%=a.AuctionID%>">
-	
-	<input type="submit" value="bid">
+		<b>Standard Bid-</b><br>
+		<input type = "number" name = "bid" step = "any" min="<%=a.win_bid + 1%>" required>
+		<input type="hidden" name="auction" value="<%=a.AuctionID%>">
+		<%if(a.completed == 0) out.write("<input type=\"submit\" value=\"bid\">"); %>
 	</form>
 	<form action="MakeAutoBid" method="post" onsubmit="return confirm('Confirm Auto-Bid?');">
 	<b>Autobid-</b><br>
 	If someone else has the winning bid, Autobid(TM pending) will bid $1 higher for you until upperLimit is reached <br>
 	If you already have an Autobid setup, this will replace your current autobid. <br>
-	Bid must be at least $1 more than the current top bid <br>
 	<br>
 	MaxBid
 	<input type = "number" name = "MaxBid" step = "any" min="<%=a.win_bid+1%>" required>
 	<input type="hidden" name="auction" value="<%=a.AuctionID%>">
-	<input type="submit" value="SetUp Autobid">
+	<%if(a.completed == 0) out.write("<input type=\"submit\" value=\"SetUp Autobid\">"); %>
 	</form>
 	
 	<a style="padding-right:10px" href="./create_auction"> Create Another Auction   </a>
