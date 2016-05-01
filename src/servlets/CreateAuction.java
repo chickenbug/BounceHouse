@@ -101,20 +101,20 @@ public class CreateAuction extends HttpServlet {
 			String title = request.getParameter("title");
 			String description = request.getParameter("description");		
 			float minbid = Float.parseFloat(request.getParameter("minbid"));
+			int userID = (Integer)request.getSession().getAttribute("userID");
 			
-			SimpleDateFormat sd = new SimpleDateFormat("DD-MM-YYYY HH:mm");
+			SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 			String date_string = request.getParameter("datetime");
-			System.out.println(date_string);
 			Timestamp t = new Timestamp(sd.parse(date_string).getTime());
 			if(t.before(new Date(Calendar.getInstance().getTimeInMillis()))){
 				System.out.println("Date in the past");
 				response.sendRedirect("create_auction.html?past-error");
 			}
-			
-			int ItemID = insert_item(bounce,category,size,subcategory,title,description, response);
-			//insert_auction(ItemID, minbid, d, (int)sesh.getAttribute("userID"), response);
-			int AuctionID = insert_auction(ItemID, minbid, t, 1, response);
-			response.sendRedirect("auction?" + AuctionID);
+			else{
+				int ItemID = insert_item(bounce,category,size,subcategory,title,description, response);
+				int AuctionID = insert_auction(ItemID, minbid, t, userID, response);
+				response.sendRedirect("auction?" + AuctionID);
+			}
 		} catch (ParseException e1) {
 			System.out.println("Whoa! unparsable date?");
 			response.sendRedirect("create_auction.html?dt-error");

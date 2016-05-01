@@ -68,17 +68,24 @@ public class ViewAuctions extends HttpServlet {
 					/*
 					 * Process request and output HTML.
 					 */
+					writer.println("<tr>"
+							+		"<td><center> Category </center></td>"
+							+		"<td><center> Subcategory</center></td>"
+							+		"<td><center> Title </center></td>"
+							+ 		"<td><center> Description</center></td>"
+							+ 		"<td><center>Close Date</center></td>"
+							+ 		"<td><center>Link</center></td>"
+					);
 					while (auctions.next()) {
-						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Image FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
-						
+						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Title FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
 						while (items.next()) {
 							writer.println("<tr>"
 									+		"<td><center>" + items.getString("Category") + "</center></td>"
 									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
+									+		"<td><center>"+ items.getString("Title") + "</center></td>"
 									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
-									+ 		"<td><center>Closes on " + auctions.getString("CloseDate") + "</center></td>"
-/*------------->*/					+		"<td><center><a href = \"?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" //Add Auction Page Here - Haikinh
-									+ 	"</tr>" 
+									+ 		"<td><center>" + auctions.getString("CloseDate") + "</center></td>"
+									+		"<td><center><a href = \"auction?" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>"
 							);
 						}
 					}
