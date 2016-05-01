@@ -110,7 +110,7 @@
 			<br>
 			<br>
 			<input type = "submit" value = "Submit"> &emsp;
-			<button onclick=\"window.location='{$_SERVER['adminFunctions.jsp']}';return false;\">Cancel</button>		
 		</form>
+		<a href="adminFunctions.jsp"><input type="button" value="Cancel" name="cancel"/></a>
 	</body>
 </html>

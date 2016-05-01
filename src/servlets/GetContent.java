@@ -65,18 +65,18 @@ public class GetContent extends HttpServlet {
 /*------------------>*/	+			"<a href = \"PLACEHOLDER\">Create An Auction</a> | " //Add link for auction creation here - Haikinh
 						+			"<a href = \"ViewAuctions\">View Auctions</a> | " 
 						+ 			"<a href = \"search.jsp\">Search</a> | "
-/*------------------->*/+			"<a href = \"PLACEHOLDER\">Ask A Question/Contact Us</a> | " //Add link for Q/A page here - Tim
+/*------------------->*/+			"<a href = \"questionPage.jsp\">Ask/View Questions</a> | " //Add link for Q/A page here - Tim
 						+			"<a href = \"ViewAccount?userID=" + request.getSession().getAttribute("userID") + "\">View Account</a> | "
 						+			"<a href = \"ViewAlerts?userID=" + request.getSession().getAttribute("userID") + "\">Manage Alerts</a> | "
 						+			"<a href = \"RecievedAlerts?userID=" + request.getSession().getAttribute("userID") + "\">View Recieved Alerts</a> | "
 						+			"<a href = \"Logout\">Logout</a>"
 		);
 		
-		if (request.getSession().getAttribute("role").toString().equals("Admin")) {
+		if (request.getSession().getAttribute("role").toString().equals("admin")) {
 			writer.println("<hr>"
 					+ 		"<a href = \"adminFunctions.jsp\">Administrator Functions</a>"
 			);
-		} else if (request.getSession().getAttribute("role").toString().equals("Rep")) {
+		} else if (request.getSession().getAttribute("role").toString().equals("rep")) {
 			writer.println("<hr>"
 					+		"<a href = \"repFunctions.jsp\">Customer Representative Functions</a>"
 			);

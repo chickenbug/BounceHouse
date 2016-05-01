@@ -21,6 +21,11 @@
 			<br>
 			Generate Sales Reports
 		</a> 
+		<a href = "GetContent">
+			<br>
+			<br>
+			Return to main page		
+			</a> 
 		</center>
 	</body>
 </html>

@@ -29,8 +29,7 @@ CREATE TABLE User(
 	PRIMARY KEY(UserID)
 );
 
-INSERT INTO User VALUES('610 Taylor Rd', 7-7-1994, 'Piscataway', 'USA', 'tgoetjen@gmail.com', 'Tim','Goetjen', 'password', '5555555', 
-	'08901','Admin','NJ',1,'tgoetjen');
+INSERT INTO User(Username,Password,UserID,Role) VALUES("tgoetjen","password",1,"admin");
 
 CREATE TABLE Item(
 	ItemID int(9) NOT NULL AUTO_INCREMENT,
