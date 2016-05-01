@@ -32,6 +32,10 @@ public class ViewAuction extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+			return;
+		}
 		try{
 			int auctionID = Integer.parseInt(request.getQueryString());
 			if(auctionID < 0) throw new NumberFormatException();

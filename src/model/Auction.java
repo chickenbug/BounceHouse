@@ -25,6 +25,49 @@ public class Auction {
 		this.win_bid = win_bid;
 	}
 	
+	public static int findWinID(int auctionID){
+		try{
+			Connection con = SQLConnector.getConnection();
+			Statement s = con.createStatement();
+			ResultSet rs = s.executeQuery("SELECT WinnerID FROM Auction WHERE AuctionID = "+ auctionID);
+			if(!rs.next()) return -1;
+			return rs.getInt("WinnerID"); 
+		}
+		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
+			System.out.println("Unable to find WinBid");
+			return -1;
+		}	
+	}
+	
+	// returns the value of the current top bid given auction ID
+	public static float findWinBid(int auctionID){
+		try{
+			Connection con = SQLConnector.getConnection();
+			Statement s = con.createStatement();
+			ResultSet rs = s.executeQuery("SELECT WinBid FROM Auction WHERE AuctionID = "+ auctionID);
+			if(!rs.next()) return -1;
+			return rs.getFloat("WinBid"); 
+		}
+		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
+			System.out.println("Unable to find WinBid");
+			return -1;
+		}
+	}
+	
+	public static boolean updateTop(int auctionID, float winBid, int userID){
+		try{
+			Connection con = SQLConnector.getConnection();
+			Statement s = con.createStatement();
+			s.executeUpdate("UPDATE Auction SET WinBid = " + winBid+ ", WinnerID = " + userID + " WHERE AuctionID = "+ auctionID);
+			return true;
+		}
+		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
+			System.out.println("Invalid Query Param (Negative or non Integer)");
+			return false;
+		}
+		
+	}
+	
 	public static Auction findAuction(int auctionID){
 		try{
 			Connection con = SQLConnector.getConnection();

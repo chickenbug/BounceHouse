@@ -8,19 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import model.AutoBid;
-import model.Bid;
 
 /**
- * Servlet implementation class Bid
+ * Servlet implementation class MakeAutoBid
  */
-@WebServlet("/bid")
-public class MakeBid extends HttpServlet {
+@WebServlet("/MakeAutoBid")
+public class MakeAutoBid extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MakeBid() {
+    public MakeAutoBid() {
         super();
     }
 
@@ -33,14 +32,22 @@ public class MakeBid extends HttpServlet {
 			return;
 		}
 		
-		float amount = Float.parseFloat(request.getParameter("bid"));
+		float maxBid = Float.parseFloat(request.getParameter("MaxBid"));
 		int auctionID = Integer.parseInt(request.getParameter("auction"));
-		Bid.insertBid(auctionID, (Integer)request.getSession().getAttribute("userID"), amount); 
-		request.setAttribute("type", "");
-		request.setAttribute("value", Float.toString(amount));
-		request.setAttribute("auction", Integer.toString(auctionID));
+		int userID = (Integer)request.getSession().getAttribute("userID");
+		if(!AutoBid.insertAutobid(auctionID, userID, maxBid)){
+			response.sendRedirect("error.html");
+			return;
+		}
+		
 		AutoBid.runAutobids(auctionID);
-		request.getRequestDispatcher("bid_success.jsp").forward(request, response);
+		
+		request.setAttribute("type", "Auto-");
+		request.setAttribute("value", Float.toString(maxBid));
+		request.setAttribute("auction", Integer.toString(auctionID));
+		request.getRequestDispatcher("bid_success.jsp").forward(request, response);;
+		
+		
 	}
 
 }
