@@ -144,9 +144,9 @@ public class ViewBidsAsRep extends HttpServlet {
 			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			s.executeUpdate();
 			response.sendRedirect("ViewBidsAsRep");
+			return;
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			response.sendRedirect("error.html");
 			return;
 		}
 	}

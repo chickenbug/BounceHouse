@@ -116,9 +116,10 @@ public class ViewQuestions extends HttpServlet {
 
 		} catch (SQLException s) {
 			writer.println("Failed to get auction list: " + s.getMessage() + "<br>");
+			return;
 		} catch (Exception e) {
 			writer.println("Failed to get auction list: " + e.getMessage() + "<br>");
-			//writer.println(e.getCause());
+			return;
 		} finally {
 			//Close resultset, statement, connection.
 			try {
@@ -136,11 +137,13 @@ public class ViewQuestions extends HttpServlet {
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
+				return;
 			} catch (Exception e) {
 				/*
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
+				return;
 			}
 
 			//Write closing html for page.

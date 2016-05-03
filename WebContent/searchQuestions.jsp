@@ -27,10 +27,10 @@ Looking for a specific question topic? Choose topic to search by:
 			<input type = "submit" value = "Search">
 		</form>
 		<br>
-			<a href = "GetContent">
+			<a href = "ViewQuestions">
 			<br>
 			<br>
-			Home		
+			Return to Question Page		
 			</a> 
 			</center>
 </body>

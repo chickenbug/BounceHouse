@@ -2,6 +2,13 @@
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
+<%if (request.getSession().getAttribute("userID") == null) {
+	response.sendError(403, "You are not authorized to access this page.");
+}
+	if (!request.getSession().getAttribute("role").equals("admin")) {
+		response.sendRedirect("GetContent");
+		
+	}%>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>View Earnings By Type</title>

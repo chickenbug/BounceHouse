@@ -31,6 +31,7 @@ public class ViewEarningsByItemType extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("admin")) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		PrintWriter writer  = response.getWriter();
 		
@@ -85,9 +86,10 @@ public class ViewEarningsByItemType extends HttpServlet {
 
 		} catch (SQLException s) {
 			writer.println("Failed to get earnings list: " + s.getMessage() + "<br>");
+			return;
 		} catch (Exception e) {
 			writer.println("Failed to get earnings list: " + e.getMessage() + "<br>");
-			//writer.println(e.getCause());
+			return;
 		} finally {
 			//Close resultset, statement, connection.
 			try {
@@ -105,11 +107,13 @@ public class ViewEarningsByItemType extends HttpServlet {
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
+				return;
 			} catch (Exception e) {
 				/*
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
+				return;
 			}
 
 			//Write closing html for page.

@@ -83,8 +83,7 @@ public class ViewQuestion extends HttpServlet {
 			s.executeUpdate();
 			response.sendRedirect("question?" + questionID);
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			response.sendRedirect("error.html");
 			return;
 		}
 

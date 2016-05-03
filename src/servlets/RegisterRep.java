@@ -20,10 +20,10 @@ import java.time.Year;
 public class RegisterRep extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	@SuppressWarnings("resource")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("username") == null || !request.getParameter("role").equals("admin")) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -239,6 +239,7 @@ public class RegisterRep extends HttpServlet {
 				);
 			} else {
 				response.sendRedirect("adminFunctions.jsp");
+				return;
 			}
 		}
 	}

@@ -39,10 +39,10 @@
 			<input type = "submit" value = "Submit">
 		</form>
 		<br>
-			<a href = "GetContent">
+			<a href = "ViewQuestions">
 			<br>
 			<br>
-			Home		
+			Return to Question Page		
 			</a> 	
 		</center>	
 	</body>

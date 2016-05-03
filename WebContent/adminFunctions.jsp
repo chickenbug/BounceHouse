@@ -1,4 +1,11 @@
 <html>
+<%if (request.getSession().getAttribute("userID") == null) {
+	response.sendError(403, "You are not authorized to access this page.");
+}
+	if (!request.getSession().getAttribute("role").equals("admin")) {
+		response.sendRedirect("GetContent");
+		
+	}%>
 	<head>
 		<title>
 			Admin Functions - Bouncehouse Emporium

@@ -21,14 +21,14 @@ import model.SQLConnector;
 @WebServlet(name = "SearchQuestions", urlPatterns={"/SearchQuestions"})
 public class SearchQuestions extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public SearchQuestions() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public SearchQuestions() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,29 +36,30 @@ public class SearchQuestions extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
-		
+
 		PrintWriter writer  = response.getWriter();
 		writer.println("<html>" +
-							"<head>" +
-								"<title>" +
-									"Bouncehouse Emporium - Search Questions" +
-								"</title>" +
-							"</head>" +
-							"<body>" +
-								"<center>" +
-								"<h1>Bouncehouse Emporium</h1>" +
-								"<h3>Question Search Results</h3>" +
-								"<hr>" +
-								"<table border = 1 width = 75%>"+
-								"<tr>"
-								+		"<td><center> Topic </center></td>"
-								+		"<td><center> Question </center></td>"
-								+		"<td><center> Asking User </center></td>"
-								+		"<td><center> Responding Rep </center></td>"
-								+ 		"<td><center> View Answer </center></td></tr>"
-		);	
-		
+				"<head>" +
+				"<title>" +
+				"Bouncehouse Emporium - Search Questions" +
+				"</title>" +
+				"</head>" +
+				"<body>" +
+				"<center>" +
+				"<h1>Bouncehouse Emporium</h1>" +
+				"<h3>Question Search Results</h3>" +
+				"<hr>" +
+				"<table border = 1 width = 75%>"+
+				"<tr>"
+				+		"<td><center> Topic </center></td>"
+				+		"<td><center> Question </center></td>"
+				+		"<td><center> Asking User </center></td>"
+				+		"<td><center> Responding Rep </center></td>"
+				+ 		"<td><center> View Answer </center></td></tr>"
+				);	
+
 		/*
 		 * Boolean statements to keep track of what the user searched for. 
 		 * Relevance level is just a measure of how many fields matched the user's search.
@@ -73,7 +74,7 @@ public class SearchQuestions extends HttpServlet {
 		int count = 0;
 		String query = null;
 
-		
+
 		try {
 			connection = SQLConnector.getConnection();
 			getQuestions = connection.createStatement();
@@ -82,9 +83,9 @@ public class SearchQuestions extends HttpServlet {
 			if(request.getParameter("topic") != null) {
 				if(!request.getParameter("topic").equals("")) query += " AND topic = \"" + request.getParameter("topic") + "\";";
 			} 
-			
+
 			questions = getQuestions.executeQuery(query);
-			
+
 			while (questions.next()) {
 				count++;
 				writer.println("<tr>"
@@ -108,56 +109,59 @@ public class SearchQuestions extends HttpServlet {
 						writer.println("<td><center>Question Unanswered</center></td>");
 				}
 			}
-			
+
 			if (count == 0) {
 				writer.println("<tr>"
 						+ 	"<td><center>We're sorry, but there were no questions matching your search query.</center></td>"
 						+	"</tr>"
-				);
+						);
 			}
-			
+
 			writer.println("</table>"
-						+ "<br>"
-						+ "<br>"
-						+ "<br>");
-					
-			} catch (SQLException s) {
-				writer.println("Search failed: " + s.getMessage() + "<br>");
-			} catch (Exception e) {
-					writer.println("Search failed: " + e.getMessage() + "<br>");
-					//writer.println(e.getCause());
-				} finally {
-					//Close resultset, statement, connection.
-					try {
-						if (questions != null) {
-							questions.close();
-						}
-						if (getQuestions != null) {
-							getQuestions.close();
-						}
-						if (connection != null) {
-							connection.close();
-						}
-					} catch (SQLException sql) {
-						/*
-						 * Do nothing. The page has already loaded - no need to let the user know
-						 * there was an error that doesn't affect them.
-						 */
-					} catch (Exception e) {
-						/*
-						 * Do nothing. The page has already loaded - no need to let the user know
-						 * there was an error that doesn't affect them.
-						 */
-					}
-					
-					//Write closing html for page.
-					writer.println("<br>"
-								+	"<a href = \"GetContent\">Return to Main Page</a>"
-								+	"</center>"
-								+	"</body"
-								+	"</html>"
-					);
+					+ "<br>"
+					+ "<br>"
+					+ "<br>");
+
+		} catch (SQLException s) {
+			writer.println("Search failed: " + s.getMessage() + "<br>");
+			return;
+		} catch (Exception e) {
+			writer.println("Search failed: " + e.getMessage() + "<br>");
+			return;
+		} finally {
+			//Close resultset, statement, connection.
+			try {
+				if (questions != null) {
+					questions.close();
 				}
+				if (getQuestions != null) {
+					getQuestions.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException sql) {
+				/*
+				 * Do nothing. The page has already loaded - no need to let the user know
+				 * there was an error that doesn't affect them.
+				 */
+				return;
+			} catch (Exception e) {
+				/*
+				 * Do nothing. The page has already loaded - no need to let the user know
+				 * there was an error that doesn't affect them.
+				 */
+				return;
+			}
+
+			//Write closing html for page.
+			writer.println("<br>"
+					+	"<a href = \"GetContent\">Return to Main Page</a>"
+					+	"</center>"
+					+	"</body"
+					+	"</html>"
+					);
+		}
 	}
 
 	/**

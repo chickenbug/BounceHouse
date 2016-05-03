@@ -105,9 +105,10 @@ public class ViewBestSellingItems extends HttpServlet{
 
 		} catch (SQLException s) {
 			writer.println("Failed to get earnings list: " + s.getMessage() + "<br>");
+			return;
 		} catch (Exception e) {
 			writer.println("Failed to get earnings list: " + e.getMessage() + "<br>");
-			//writer.println(e.getCause());
+			return;
 		} finally {
 			//Close resultset, statement, connection.
 			try {
@@ -125,11 +126,13 @@ public class ViewBestSellingItems extends HttpServlet{
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
+				return;
 			} catch (Exception e) {
 				/*
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
+				return;
 			}
 
 			//Write closing html for page.
@@ -149,23 +152,23 @@ public class ViewBestSellingItems extends HttpServlet{
 		doGet(request, response);
 	}
 	public static Map<String, Integer> sortByValue( Map<String, Integer> map )
-    {
-        List<Map.Entry<String, Integer>> list =
-            new LinkedList<Map.Entry<String, Integer>>( map.entrySet() );
-        Collections.sort( list, new Comparator<Map.Entry<String, Integer>>()
-        {
-            public int compare( Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2 )
-            {
-                return (o2.getValue()).compareTo( o1.getValue() );
-            }
-        } );
+	{
+		List<Map.Entry<String, Integer>> list =
+				new LinkedList<Map.Entry<String, Integer>>( map.entrySet() );
+		Collections.sort( list, new Comparator<Map.Entry<String, Integer>>()
+		{
+			public int compare( Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2 )
+			{
+				return (o2.getValue()).compareTo( o1.getValue() );
+			}
+		} );
 
-        Map<String, Integer> result = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> entry : list)
-        {
-            result.put( entry.getKey(), entry.getValue() );
-        }
-        return result;
-    }
+		Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+		for (Map.Entry<String, Integer> entry : list)
+		{
+			result.put( entry.getKey(), entry.getValue() );
+		}
+		return result;
+	}
 }
 

@@ -52,8 +52,8 @@ public class AddQuestion extends HttpServlet {
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			response.sendRedirect("error.html");
+			return 0;
 		}
-		return 0;
 	}
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -96,6 +96,7 @@ public class AddQuestion extends HttpServlet {
 				return;
 			}
 			response.sendRedirect("questionSubmitted.jsp");
+			return;
 			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
