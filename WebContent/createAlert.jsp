@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Bouncehouse Emporium - Search</title>
+		<title>Bouncehouse Emporium - Create Alert</title>
 	</head>
 	<body>
 		<h1>
@@ -10,17 +10,16 @@
 		</h1>
 		<h3>
 			<center>
-				Search
+				Create Alert
 			</center>
 		</h3>
 		<hr>
-		Looking for a specific item? Use the following form to search:
-		<form action = "Search" method = post>
+		Looking for a specific item, but can't find one that's just right? Fill out the following form and we'll alert you when the perfect item is ready:
+		<form action = "CreateAlert" method = post>
 			<br>
 			Bounciness (scored on a scale of one to ten)
 			<br>
 			<select name = "bounciness" id = "bounciness">
-				<option value = "" selected>No Preference</option>
 				<option value = "1">1</option>
 				<option value = "2">2</option>
 				<option value = "3">3</option>
@@ -37,7 +36,6 @@
 			Category
 			<br>
 			<select name = "category" id = "category">
-				<option value = "" selected>No Preference</option>
 				<option value = "House">House</option>
 				<option value = "Slide">Slide</option>
 				<option value = "Activity">Castle</option>
@@ -48,7 +46,6 @@
 			Color
 			<br>
 			<select name = "color" id = "color">
-				<option value = "" selected>No Preference</option>
 				<option value = "Black">Black</option>
 				<option value = "Blue">Blue</option>
 				<option value = "Brown">Brown</option>
@@ -66,8 +63,6 @@
 			Size
 			<br>
 			<select name = "size" id = "size">
-				<option value = "" selected>No Preference</option>
-				<%-- <option value = "XS">Extra Small</option> --%>
 				<option value = 'S'>Small</option>
 				<%-- <option value = 'M'>Medium</option> --%>
 				<option value = 'L'>Large</option>
@@ -78,7 +73,6 @@
 			Subcategory
 			<br>
 			<select name = "subcategory" id = "subcategory">
-				<option value = "" selected>No Preference</option>
 				<option value = "Standard">Standard</option>
 				<option value = "Medieval">Medieval</option>
 				<option value = "Pirate">Pirate</option>
@@ -86,7 +80,7 @@
 			</select>
 			<br>
 			<br>
-			<input type = "submit" value = "Search">
+			<input type = "submit" value = "Submit">
 		</form>
 	</body>
 </html>

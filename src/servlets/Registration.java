@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -11,9 +12,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import model.SQLConnector;
-
 import java.time.Year;
 
 @WebServlet(name = "Registration", urlPatterns = {"/Registration"})
@@ -21,12 +19,9 @@ public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect("createAccount.jsp");
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("username") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -54,8 +49,84 @@ public class Registration extends HttpServlet {
 		/*
 		 * Do all error checking with regards to input fields here. Invalid or null inputs are reasons to terminate.
 		 */
-
-		if (!request.getParameter("password").equals(request.getParameter("confirmpassword"))) {
+		if (request.getParameter("address") == null || request.getParameter("address").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("city") == null || request.getParameter("city").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("country") == null || request.getParameter("country").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("email") == null || request.getParameter("email").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("firstname") == null || request.getParameter("firstname").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("lastname") == null || request.getParameter("lastname").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("password") == null || request.getParameter("password").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("phone") == null || request.getParameter("phone").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("postcode") == null || request.getParameter("postcode").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("state") == null || request.getParameter("state").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (request.getParameter("username") == null || request.getParameter("username").equals("")) {
+			writer.println("Account creation failed: all fields are required, but some were left blank.<br>"
+					+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
+					+	"</body>"
+					+	"</html>"
+			);
+			return;	
+		} else if (!request.getParameter("password").equals(request.getParameter("confirmpassword"))) {
 			//passwords do not match - reject
 			writer.println("Account creation failed: the passwords do not match.<br>"
 						+	"Please click <a href = \"createAccount.jsp\">here</a> to try again."
@@ -100,10 +171,10 @@ public class Registration extends HttpServlet {
 			return;
 		}
 		
-		
-		
 		try {
-			connection = SQLConnector.getConnection();
+			Class.forName("com.mysql.jdbc.Driver");
+			//username and password below are placeholders - replace them 
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			statement = connection.createStatement();
 			usernameExists = statement.executeQuery("SELECT COUNT(*) AS Count FROM User WHERE Username = \"" + request.getParameter("username") + "\";");
 			
@@ -166,7 +237,12 @@ public class Registration extends HttpServlet {
 				);
 			} else {
 				response.sendRedirect("index.jsp");
+				return;
 			}
 		}
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 }
