@@ -11,30 +11,30 @@
 	<h1> Bouncehouse Emporium </h1>
 	<h2> Customer Representative Functions </h2>
 	<br>
-	<a href = "questionPage.jsp">
+	<a href = "ViewQuestions">
 			<br>
 			<br>
 			Answer Customer Questions
 		</a>
-		<a href = "viewBids.jsp">
+		<a href = "ViewBidsAsRep">
 			<br>
 			<br>
-			View Bids
+			View/Remove Bids
 		</a> 
-		<a href = "modify.jsp">
+		<a href = "ViewAccounts">
 			<br>
 			<br>
-			Modify Information
+			Modify Account Information
 		</a> 
 		<a href = "ViewAuctions">
 			<br>
 			<br>
-			View Auctions
+			View/Remove Auctions
 		</a> 
 		<a href = "GetContent">
 			<br>
 			<br>
-			Return to main page		
+			Home		
 			</a> 
 	</center>
 

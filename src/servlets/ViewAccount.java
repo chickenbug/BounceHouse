@@ -137,7 +137,7 @@ public class ViewAccount extends HttpServlet {
 				writer.println("<br>"
 						+ "<br>"
 						+ "<center>"
-						+ "<a href = \"GetContent\">Return To Main Page</a>"
+						+ "<a href = \"GetContent\">Home</a>"
 						+ "</center"
 						+ "</body>"
 						+ "</html>"

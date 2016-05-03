@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -78,6 +79,7 @@ public class ViewAuctions extends HttpServlet {
 							+ 		"<td><center>Link</center></td>"
 					);
 					while (auctions.next()) {
+						int auctionID = Integer.parseInt(auctions.getString("auctionID"));
 						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Title FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
 						while (items.next()) {
 							writer.println("<tr>"
@@ -86,8 +88,13 @@ public class ViewAuctions extends HttpServlet {
 									+		"<td><center>"+ items.getString("Title") + "</center></td>"
 									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 									+ 		"<td><center>" + auctions.getString("CloseDate") + "</center></td>"
-									+		"<td><center><a href = \"auction?" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>"
+									+		"<td><center><a href = \"auction?" + auctions.getInt("AuctionID") + "\">View This Auction</a>"
 							);
+							if (request.getSession().getAttribute("role").equals("rep")){
+								writer.println("<form action=\"ViewAuctions\" method=\"post\" onsubmit=\"return confirm('Confirm Removal?');\">"
+										+ "<INPUT TYPE=\"submit\" VALUE=\"Remove\"><input type = \"hidden\" name = \"aucID\" value = "+auctionID+"></form>");
+							}
+							writer.println("</center></td>");
 						}
 					}
 					
@@ -139,5 +146,25 @@ public class ViewAuctions extends HttpServlet {
 					);
 				}
 		}
-
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+			return;
+		}
+		int auctionID = Integer.parseInt((String)request.getParameter("aucID"));
+		try {
+			Connection con = SQLConnector.getConnection();
+			String sql = "Delete from auction where auctionID = "+auctionID;
+			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			s.executeUpdate();
+			response.sendRedirect("ViewAuctions");
+		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+	}
 }

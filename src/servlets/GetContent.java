@@ -65,7 +65,7 @@ public class GetContent extends HttpServlet {
 /*------------------>*/	+			"<a href = \"create_auction\">Create An Auction</a> | " //Add link for auction creation here - Haikinh
 						+			"<a href = \"ViewAuctions\">View Auctions</a> | " 
 						+ 			"<a href = \"search.jsp\">Search</a> | "
-/*------------------->*/+			"<a href = \"questionPage.jsp\">Ask/View Questions</a> | " //Add link for Q/A page here - Tim
+/*------------------->*/+			"<a href = \"ViewQuestions\">Ask/View Questions</a> | " //Add link for Q/A page here - Tim
 						+			"<a href = \"ViewAccount?userID=" + request.getSession().getAttribute("userID") + "\">View Account</a> | "
 						+			"<a href = \"ViewAlerts?userID=" + request.getSession().getAttribute("userID") + "\">Manage Alerts</a> | "
 						+			"<a href = \"RecievedAlerts?userID=" + request.getSession().getAttribute("userID") + "\">View Recieved Alerts</a> | "

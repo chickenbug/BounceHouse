@@ -24,7 +24,7 @@
 		<a href = "GetContent">
 			<br>
 			<br>
-			Return to main page		
+			Home	
 			</a> 
 		</center>
 	</body>
