@@ -6,7 +6,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,14 +27,14 @@ import model.SQLConnector;
  * Servlet implementation class ViewEarningsByType
  */
 @WebServlet(name = "ViewBestSellingItems", urlPatterns = {"/ViewBestSellingItems"})
-public class ViewBestSellingItems extends HttpServlet {
+public class ViewBestSellingItems extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null) {
+		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("admin")) {
 			response.sendError(403, "You are not authorized to access this page.");
 		}
 		PrintWriter writer  = response.getWriter();
@@ -82,12 +87,13 @@ public class ViewBestSellingItems extends HttpServlet {
 				}
 				else items.put(earnings.getString("I.category"), earnings.getInt("A.winbid"));
 			}
-			for(Entry<String, Integer> entry: items.entrySet()){
-				for(Entry<String, Integer> entry2: count.entrySet()){
+			Map<String,Integer> sortedCount = sortByValue(count);
+			for(Entry<String, Integer> entry: sortedCount.entrySet()){
+				for(Entry<String, Integer> entry2: items.entrySet()){
 					if(entry2.getKey().equals(entry.getKey())){
 						writer.println("<tr><td><center>" + entry.getKey() + "</center></td>"
-								+		"<td><center>" + entry2.getValue() + "</center></td>"
-								+		"<td><center>" + entry.getValue() + "</center></td>");
+								+		"<td><center>" + entry.getValue() + "</center></td>"
+								+		"<td><center>" + entry2.getValue() + "</center></td>");
 					}
 				}
 			}
@@ -142,5 +148,24 @@ public class ViewBestSellingItems extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+	public static Map<String, Integer> sortByValue( Map<String, Integer> map )
+    {
+        List<Map.Entry<String, Integer>> list =
+            new LinkedList<Map.Entry<String, Integer>>( map.entrySet() );
+        Collections.sort( list, new Comparator<Map.Entry<String, Integer>>()
+        {
+            public int compare( Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2 )
+            {
+                return (o2.getValue()).compareTo( o1.getValue() );
+            }
+        } );
 
+        Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> entry : list)
+        {
+            result.put( entry.getKey(), entry.getValue() );
+        }
+        return result;
+    }
 }
+

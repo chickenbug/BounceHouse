@@ -24,7 +24,7 @@ public class ViewAuctions extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null) {
+		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("rep")) {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
@@ -48,6 +48,7 @@ public class ViewAuctions extends HttpServlet {
 						+		"<center>" 
 						+			"<h1>Bouncehouse Emporium</h1>" 
 						+			"<h3>View Auctions</h3>"
+						+			"<center><a href = \"GetContent\"><br><br>Home</a></center>"
 						+			"<hr>"
 						+			"<table border = 1 width = 100%>"
 		);

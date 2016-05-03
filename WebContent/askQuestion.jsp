@@ -37,7 +37,13 @@
 			<br>
 			<br>
 			<input type = "submit" value = "Submit">
-		</form>	
+		</form>
+		<br>
+			<a href = "GetContent">
+			<br>
+			<br>
+			Home		
+			</a> 	
 		</center>	
 	</body>
 </html>

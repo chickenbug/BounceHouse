@@ -6,7 +6,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Bouncehouse Emporium - Question Search</title>
 </head>
+<center><h1> Bouncehouse Emporium - Search Questions </h1></center>
 <body>
+<center>
 Looking for a specific question topic? Choose topic to search by:
 		<form action = "SearchQuestions" method = post>
 			<br>
@@ -24,5 +26,12 @@ Looking for a specific question topic? Choose topic to search by:
 			<br>
 			<input type = "submit" value = "Search">
 		</form>
+		<br>
+			<a href = "GetContent">
+			<br>
+			<br>
+			Home		
+			</a> 
+			</center>
 </body>
 </html>

@@ -22,7 +22,7 @@ public class RegisterRep extends HttpServlet {
 	
 	@SuppressWarnings("resource")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getParameter("username") == null || !request.getParameter("Role").equals("admin")) {
+		if (request.getParameter("username") == null || !request.getParameter("role").equals("admin")) {
 			response.sendError(403, "You are not authorized to access this page.");
 		}
 		

@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS Card;
 DROP TABLE IF EXISTS Email;
 DROP TABLE IF EXISTS Item;
 DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS UserQuestion;
+DROP TABLE IF EXISTS Question;
 DROP TABLE IF EXISTS Wishlist;
 
 CREATE TABLE User(
@@ -124,11 +124,12 @@ CREATE TABLE Email(
 	or the user, and if we specify NO ACTION, the database will reject the deletes, which is
 	also unacceptable.
 */
-CREATE TABLE UserQuestion(
+CREATE TABLE Question(
 	Answer varchar(8000) DEFAULT NULL,
 	QuestionID int(9) NOT NULL AUTO_INCREMENT,
 	QText varchar(8000) DEFAULT NULL,
 	RepID int(9) DEFAULT NULL,
+	Topic varchar(255) NOT NULL,
 	UserID int(9) DEFAULT NULL,
 	FOREIGN KEY (RepID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,

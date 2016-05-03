@@ -34,7 +34,7 @@ public class ViewAccounts extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null) {
+		if (request.getSession().getAttribute("userID") == null||!request.getSession().getAttribute("role").equals("rep")) {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
@@ -58,6 +58,7 @@ public class ViewAccounts extends HttpServlet {
 				+		"<center>" 
 				+			"<h1>Bouncehouse Emporium</h1>" 
 				+			"<h3>View/Modify Accounts</h3>"
+				+			"<center><a href = \"GetContent\"><br><br>Home</a></center>"
 				+			"<hr>"
 				+			"<table border = 1 width = 100%>"
 				);
@@ -91,8 +92,9 @@ public class ViewAccounts extends HttpServlet {
 						+		"<td><center>" + users.getString("Username") + "</center></td>"
 						+		"<td><center>"+ users.getString("Firstname") + "</center></td>"
 						+ 		"<td><center>" + users.getString("Lastname") + "</center></td>"
-						+		"<td><center><a href = \"ViewAccount\">Edit Account</a>"
-						+ 		"<input type = \"hidden\" name = \"userID\" value = "+userID+">"
+						+		"<td><center><form action = \"ViewAccount\" method = \"post\">"
+						+ 		"<input type = \"submit\" value = \"Edit Account\">"
+						+ 		"<input type = \"hidden\" name = \"userID\" value = "+userID+"></form>"
 						);
 				writer.println("</center></td>");
 			}

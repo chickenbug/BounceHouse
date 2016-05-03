@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Random;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,38 +23,38 @@ import model.SQLConnector;
 @WebServlet(name = "AddQuestion", urlPatterns = {"/AddQuestion"})
 public class AddQuestion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public AddQuestion() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-    
-    // Inserts item into auction table returns zeor in case things go pear shaped
-    private int insert_question(String QText, int RepID, int UserID, String topic, HttpServletResponse response) throws IOException{
-			try {
-				Connection con = SQLConnector.getConnection();
-				String sql = "INSERT INTO Question (QText, RepID, UserID, Topic) VALUES (?,?,?,?)";
-				PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-				s.setString(1, QText);
-				s.setInt(2, RepID);
-				s.setInt(3, UserID);
-				s.setString(4, topic);
-				s.executeUpdate();
-				
-				ResultSet r = s.getGeneratedKeys();
-				r.next();
-				return r.getInt(1);
-				
-				
-			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
-				e.printStackTrace();
-				response.sendRedirect("error.html");
-			}
-			return 0;
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public AddQuestion() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	// Inserts item into auction table returns zeor in case things go pear shaped
+	private int insert_question(String QText, int RepID, int UserID, String topic, HttpServletResponse response) throws IOException{
+		try {
+			Connection con = SQLConnector.getConnection();
+			String sql = "INSERT INTO Question (QText, RepID, UserID, Topic) VALUES (?,?,?,?)";
+			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			s.setString(1, QText);
+			s.setInt(2, RepID);
+			s.setInt(3, UserID);
+			s.setString(4, topic);
+			s.executeUpdate();
+
+			ResultSet r = s.getGeneratedKeys();
+			r.next();
+			return r.getInt(1);
+
+
+		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			response.sendRedirect("error.html");
+		}
+		return 0;
+	}
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -60,7 +63,7 @@ public class AddQuestion extends HttpServlet {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
-			request.getRequestDispatcher(("WEB-INF/askQuestion.jsp")).forward(request, response);
+		request.getRequestDispatcher(("WEB-INF/askQuestion.jsp")).forward(request, response);
 	}
 
 	/**
@@ -71,9 +74,21 @@ public class AddQuestion extends HttpServlet {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
+		Connection con;
+		try {
+			con = SQLConnector.getConnection();
+			String sql = "Select userID from user where role = \"rep\";";
+			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			String qtext = request.getParameter("qtext");
 			String topic = request.getParameter("topic");
-			int repid = 2;
+			ResultSet rs = s.executeQuery();
+			ArrayList<Integer> repNums = new ArrayList<Integer>();
+			while(rs.next()){
+				repNums.add(Integer.parseInt(rs.getString("userID")));
+			}
+			Random randomGenerator = new Random();
+			int rando = randomGenerator.nextInt(repNums.size());
+			int repid = repNums.get(rando);
 			int userid = (Integer)request.getSession().getAttribute("userID");
 			int QuestionID = insert_question(qtext, repid, userid, topic, response);
 			if(QuestionID==0){
@@ -81,6 +96,10 @@ public class AddQuestion extends HttpServlet {
 				return;
 			}
 			response.sendRedirect("questionSubmitted.jsp");
-	}
+			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
-}
+	}
