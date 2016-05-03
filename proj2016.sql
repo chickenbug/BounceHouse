@@ -1,16 +1,14 @@
 CREATE DATABASE IF NOT EXISTS proj2016;
 USE proj2016;
 
-DROP TABLE IF EXISTS Administrator;
 DROP TABLE IF EXISTS Auction;
 DROP TABLE IF EXISTS AutoBid;
 DROP TABLE IF EXISTS Bid;
 DROP TABLE IF EXISTS Card;
-DROP TABLE IF EXISTS CustomerRep;
 DROP TABLE IF EXISTS Email;
 DROP TABLE IF EXISTS Item;
 DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS UserQuestion;
+DROP TABLE IF EXISTS Question;
 DROP TABLE IF EXISTS Wishlist;
 
 CREATE TABLE User(
@@ -24,12 +22,14 @@ CREATE TABLE User(
 	Password varchar(255) NOT NULL,
 	Phone varchar(12) DEFAULT NULL,
 	PostCode varchar(9) DEFAULT NULL,
-	Role varchar(255) NOT NULL, /* EndUser for reg users, Admin for admins, Rep for customer reps*/
+	Role varchar(255) NOT NULL, /* EndUser for reg users, admin for admins, rep for customer reps*/
 	State varchar(255) DEFAULT NULL, /* Full state name, e.g. New Jersey instead of NJ */
 	UserID int(9) NOT NULL AUTO_INCREMENT,
 	Username varchar(255) NOT NULL,
 	PRIMARY KEY(UserID)
 );
+
+INSERT INTO User(Username,Password,UserID,Role) VALUES("tgoetjen","password",1,"admin");
 
 CREATE TABLE Item(
 	ItemID int(9) NOT NULL AUTO_INCREMENT,
@@ -78,9 +78,9 @@ CREATE TABLE AutoBid(
 );
 
 CREATE TABLE Bid(
-	BidID int(9) NOT NULL AUTO_INCREMENT,
 	Amount float(7) DEFAULT 0,
 	AuctionID int(9) NOT NULL,
+	BidID int(9) NOT NULL AUTO_INCREMENT,
 	BidTime datetime DEFAULT NULL,
 	UserID int(9) NOT NULL,
 	FOREIGN KEY (AuctionID) REFERENCES Auction (AuctionID) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -124,11 +124,12 @@ CREATE TABLE Email(
 	or the user, and if we specify NO ACTION, the database will reject the deletes, which is
 	also unacceptable.
 */
-CREATE TABLE UserQuestion(
+CREATE TABLE Question(
 	Answer varchar(8000) DEFAULT NULL,
 	QuestionID int(9) NOT NULL AUTO_INCREMENT,
 	QText varchar(8000) DEFAULT NULL,
 	RepID int(9) DEFAULT NULL,
+	Topic varchar(255) NOT NULL,
 	UserID int(9) DEFAULT NULL,
 	FOREIGN KEY (RepID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE SET NULL,

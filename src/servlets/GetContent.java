@@ -65,18 +65,18 @@ public class GetContent extends HttpServlet {
 						+			"<a href = \"create_auction\">Create An Auction</a> | "
 						+			"<a href = \"createAlert.jsp\">Create Alert</a> | "
 						+ 			"<a href = \"search.jsp\">Search</a> | "
-						+			"<a href = \"ViewQuestions\">Ask A Question/Contact Us</a> | "
+						+			"<a href = \"ViewQuestions\">Ask/View Questions</a> | "
 						+			"<a href = \"ViewAccount?userID=" + request.getSession().getAttribute("userID") + "\">View Account</a> | "
 						+			"<a href = \"ViewAlerts?userID=" + request.getSession().getAttribute("userID") + "\">Manage Alerts</a> | "
 						+			"<a href = \"RecievedAlerts?userID=" + request.getSession().getAttribute("userID") + "\">View Recieved Alerts</a> | "
 						+			"<a href = \"Logout\">Logout</a>"
 		);
 		
-		if (request.getSession().getAttribute("role").toString().equals("Admin")) {
+		if (request.getSession().getAttribute("role").toString().equals("admin")) {
 			writer.println("<hr>"
 					+ 		"<a href = \"adminFunctions.jsp\">Administrator Functions</a>"
 			);
-		} else if (request.getSession().getAttribute("role").toString().equals("Rep")) {
+		} else if (request.getSession().getAttribute("role").toString().equals("rep")) {
 			writer.println("<hr>"
 					+		"<a href = \"repFunctions.jsp\">Customer Representative Functions</a>"
 			);

@@ -3,7 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.SQLConnector;
+
 /**
  * Servlet implementation class ViewAuctions
  */
@@ -22,7 +24,7 @@ public class ViewAuctions extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null) {
+		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("rep")) {
 			response.sendError(403, "You are not authorized to access this page.");
 		}
 		
@@ -45,6 +47,7 @@ public class ViewAuctions extends HttpServlet {
 						+		"<center>" 
 						+			"<h1>Bouncehouse Emporium</h1>" 
 						+			"<h3>View Auctions</h3>"
+						+			"<center><a href = \"GetContent\"><br><br>Home</a></center>"
 						+			"<hr>"
 						+			"<table border = 1 width = 100%>"
 		);
@@ -59,12 +62,9 @@ public class ViewAuctions extends HttpServlet {
 				
 		//Open connection, create statement, and process request.
 		try {
-			//Opens the driver or something lol
-			Class.forName("com.mysql.jdbc.Driver");
-					
 			//username and password below are placeholders - replace them 
 			//Set up connection to local MySQL server using proper credentials. Create a new query.
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			getAuctions = connection.createStatement();
 			getItems = connection.createStatement();
 					
@@ -74,17 +74,25 @@ public class ViewAuctions extends HttpServlet {
 					 * Process request and output HTML.
 					 */
 					while (auctions.next()) {
-						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Image FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
+						int auctionID = Integer.parseInt(auctions.getString("auctionID"));
+						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Title FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
 						
 						while (items.next()) {
 							writer.println("<tr>"
 									+		"<td><center>" + items.getString("Category") + "</center></td>"
 									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
 									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
+									+ 		"<td><center>" + auctions.getString("CloseDate") + "</center></td>"
+									+		"<td><center><a href = \"auction?" + auctions.getInt("AuctionID") + "\">View This Auction</a>"
 									+ 		"<td><center>Closes on " + auctions.getString("CloseDate") + "</center></td>"
-/*------------->*/					+		"<td><center><a href = \"?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" //Add Auction Page Here - Haikinh
+									+		"<td><center><a href = \"?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" //Add Auction Page Here - Haikinh
 									+ 	"</tr>" 
 							);
+							if (request.getSession().getAttribute("role").equals("rep")){
+								writer.println("<form action=\"ViewAuctions\" method=\"post\" onsubmit=\"return confirm('Confirm Removal?');\">"
+										+ "<INPUT TYPE=\"submit\" VALUE=\"Remove\"><input type = \"hidden\" name = \"aucID\" value = "+auctionID+"></form>");
+							}
+							writer.println("</center></td>");
 						}
 					}
 					
@@ -99,7 +107,6 @@ public class ViewAuctions extends HttpServlet {
 				} catch (Exception e) {
 					error = true;
 					writer.println("Failed to get auction list: " + e.getMessage() + "<br>");
-					//writer.println(e.getCause());
 				} finally {
 					//Close resultset, statement, connection.
 					try {
@@ -123,11 +130,13 @@ public class ViewAuctions extends HttpServlet {
 						 * Do nothing. The page has already loaded - no need to let the user know
 						 * there was an error that doesn't affect them.
 						 */
+						return;
 					} catch (Exception e) {
 						/*
 						 * Do nothing. The page has already loaded - no need to let the user know
 						 * there was an error that doesn't affect them.
 						 */
+						return;
 					}
 					
 					//Write closing html for page.
@@ -138,9 +147,25 @@ public class ViewAuctions extends HttpServlet {
 					);
 				}
 		}
-
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		if (request.getSession().getAttribute("userID") == null) {
+			response.sendError(403, "You are not authorized to access this page.");
+			return;
+		}
+		int auctionID = Integer.parseInt((String)request.getParameter("aucID"));
+		try {
+			Connection con = SQLConnector.getConnection();
+			String sql = "Delete from auction where auctionID = "+auctionID;
+			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			s.executeUpdate();
+			response.sendRedirect("ViewAuctions");
+			return;
+		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
+			response.sendRedirect("error.html");
+			return;
+		}
 	}
-
 }

@@ -130,7 +130,7 @@ public class ViewAccount extends HttpServlet {
 			}
 			
 			if (error) {
-				writer.println("Please click <a href = \"GetContent.jsp\">here</a> to return to the main page and try again."
+				writer.println("Please click <a href = \"GetContent\">here</a> to return to the main page and try again."
 						+ 		"</body>"
 						+ 	"</html>"
 				);
@@ -138,7 +138,7 @@ public class ViewAccount extends HttpServlet {
 				writer.println("<br>"
 						+ "<br>"
 						+ "<center>"
-						+ "<a href = \"GetContent\">Return To Main Page</a>"
+						+ "<a href = \"GetContent\">Home</a>"
 						+ "</center"
 						+ "</body>"
 						+ "</html>"

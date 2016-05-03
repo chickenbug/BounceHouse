@@ -20,7 +20,7 @@ public class SQLConnector {
 	/**
 	 * Database amdin password.
 	 */
-	private static final String dbPassword = "pass";
+	private static final String dbPassword = "sqlpls7";
 	/**
 	 * SQLConnector instance connection object.
 	 */
