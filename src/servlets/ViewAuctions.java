@@ -26,7 +26,6 @@ public class ViewAuctions extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("rep")) {
 			response.sendError(403, "You are not authorized to access this page.");
-			return;
 		}
 		
 		//PrintWriter to write to HTML.
@@ -59,9 +58,12 @@ public class ViewAuctions extends HttpServlet {
 		Statement getItems = null;
 		ResultSet auctions = null;
 		ResultSet items = null;
+		boolean error = false;
 				
 		//Open connection, create statement, and process request.
 		try {
+			//username and password below are placeholders - replace them 
+			//Set up connection to local MySQL server using proper credentials. Create a new query.
 			connection = SQLConnector.getConnection();
 			getAuctions = connection.createStatement();
 			getItems = connection.createStatement();
@@ -71,25 +73,20 @@ public class ViewAuctions extends HttpServlet {
 					/*
 					 * Process request and output HTML.
 					 */
-					writer.println("<tr>"
-							+		"<td><center> Category </center></td>"
-							+		"<td><center> Subcategory</center></td>"
-							+		"<td><center> Title </center></td>"
-							+ 		"<td><center> Description</center></td>"
-							+ 		"<td><center>Close Date</center></td>"
-							+ 		"<td><center>Link</center></td>"
-					);
 					while (auctions.next()) {
 						int auctionID = Integer.parseInt(auctions.getString("auctionID"));
 						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Title FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
+						
 						while (items.next()) {
 							writer.println("<tr>"
 									+		"<td><center>" + items.getString("Category") + "</center></td>"
 									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
-									+		"<td><center>"+ items.getString("Title") + "</center></td>"
 									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 									+ 		"<td><center>" + auctions.getString("CloseDate") + "</center></td>"
 									+		"<td><center><a href = \"auction?" + auctions.getInt("AuctionID") + "\">View This Auction</a>"
+									+ 		"<td><center>Closes on " + auctions.getString("CloseDate") + "</center></td>"
+									+		"<td><center><a href = \"?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" //Add Auction Page Here - Haikinh
+									+ 	"</tr>" 
 							);
 							if (request.getSession().getAttribute("role").equals("rep")){
 								writer.println("<form action=\"ViewAuctions\" method=\"post\" onsubmit=\"return confirm('Confirm Removal?');\">"
@@ -105,10 +102,11 @@ public class ViewAuctions extends HttpServlet {
 							+ "<br>");
 					
 				} catch (SQLException s) {
+					error = true;
 					writer.println("Failed to get auction list: " + s.getMessage() + "<br>");
 				} catch (Exception e) {
+					error = true;
 					writer.println("Failed to get auction list: " + e.getMessage() + "<br>");
-					//writer.println(e.getCause());
 				} finally {
 					//Close resultset, statement, connection.
 					try {
@@ -132,11 +130,13 @@ public class ViewAuctions extends HttpServlet {
 						 * Do nothing. The page has already loaded - no need to let the user know
 						 * there was an error that doesn't affect them.
 						 */
+						return;
 					} catch (Exception e) {
 						/*
 						 * Do nothing. The page has already loaded - no need to let the user know
 						 * there was an error that doesn't affect them.
 						 */
+						return;
 					}
 					
 					//Write closing html for page.

@@ -7,6 +7,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,8 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import model.SQLConnector;
 
 /**
  * 
@@ -39,8 +38,9 @@ public class GetContent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null) {
+		if (request.getSession().getAttribute("userID") == null || request.getSession().getAttribute("username") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		//PrintWriter to write to HTML.
@@ -62,10 +62,10 @@ public class GetContent extends HttpServlet {
 						+		"<center>" 
 						+			"<h1>Bouncehouse Emporium</h1>" 
 						+			"<h3>Central Hub</h3>" 
-/*------------------>*/	+			"<a href = \"create_auction\">Create An Auction</a> | " //Add link for auction creation here - Haikinh
-						+			"<a href = \"ViewAuctions\">View Auctions</a> | " 
+						+			"<a href = \"create_auction\">Create An Auction</a> | "
+						+			"<a href = \"createAlert.jsp\">Create Alert</a> | "
 						+ 			"<a href = \"search.jsp\">Search</a> | "
-/*------------------->*/+			"<a href = \"ViewQuestions\">Ask/View Questions</a> | " //Add link for Q/A page here - Tim
+						+			"<a href = \"ViewQuestions\">Ask/View Questions</a> | "
 						+			"<a href = \"ViewAccount?userID=" + request.getSession().getAttribute("userID") + "\">View Account</a> | "
 						+			"<a href = \"ViewAlerts?userID=" + request.getSession().getAttribute("userID") + "\">Manage Alerts</a> | "
 						+			"<a href = \"RecievedAlerts?userID=" + request.getSession().getAttribute("userID") + "\">View Recieved Alerts</a> | "
@@ -85,12 +85,14 @@ public class GetContent extends HttpServlet {
 						+		"<hr>" 
 						+		"<center>"	
 						+		"<form action = \"GetContent\" method = \"post\">"
-						+			"<select id = \"sortBy\">"
+						+			"<select name = \"sortBy\" id = \"sortBy\">"
 						+				"<option value = \"noSort\" selected>Do Not Sort Results</option>"
 						+				"<option value = \"bouncinessASC\">Bounciness Low to High</option>"
 						+				"<option value = \"bouncinessDESC\">Bounciness High to Low</option>"
 						+				"<option value = \"categoryASC\">Category A to Z</option>"
 						+				"<option value = \"categoryDESC\">Category Z to A</option>"
+						+				"<option value = \"colorASC\">Color A to Z</option>"
+						+				"<option value = \"colorDESC\">Color Z to A</option>"
 						+				"<option value = \"sizeASC\">Size XS to XL</option>"
 						+				"<option value = \"sizeDESC\">Size XL to XS</option>"
 						+				"<option value = \"subcategoryASC\">Subcategory A to Z</option>"
@@ -99,47 +101,60 @@ public class GetContent extends HttpServlet {
 						+			"<input type = \"submit\" value = \"Apply\">"
 						+		"</form>"
 						+		"<table border = 1 width = 100%>"
-						+		"<tr>"
-						+		"<td><center>Category</center></td>"
-						+		"<td><center>Subcategory</center></td>"
-						+		"<td><center>Title</center></td>"
-						+ 		"<td><center>Desciprtion</center></td>"
-						+ 		"<td><center>Bounciness</center></td>"
-						+		"<td><center>Size</center></td>"
-						+		"<td><center>Create an Alert</center></td>"
-						+ 		"</tr>" 
+						+			"<th>Category</th>"
+						+			"<th>Subcategory</th>"
+						+			"<th>Description</th>"
+						+			"<th>Bounciness</th>"
+						+			"<th>Color</th>"
+						+			"<th>Size</th>"
+						+			"<th>See The Auction For This Item</th>"
 		);	
 		
 		//Create objects for connections, statements, and resultsets.
 		Connection connection = null;
 		Statement getItems = null;
+		Statement getAuction = null;
 		ResultSet items = null;
+		ResultSet auction = null;
+		boolean error = false;
 		
 		//Open connection, create statement, and process request.
 		try {
-			connection = SQLConnector.getConnection();
+			//Opens the driver or something lol
+			Class.forName("com.mysql.jdbc.Driver");
+			
+			//username and password below are placeholders - replace them 
+			//Set up connection to local MySQL server using proper credentials. Create a new query.
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			getItems = connection.createStatement();
+			getAuction = connection.createStatement();
 			String query = "SELECT * FROM Item ";
 			
 			//Implement sorting:
 			if (request.getParameter("sortBy") == null || request.getParameter("sortBy").equals("noSort")) {
-				query.concat("ORDER BY ItemID ASC"); //sort in terms of itemID number low to high if no sorting specified.
+				//writer.println("no sort<br>");
+				query += "ORDER BY ItemID ASC;"; //sort in terms of itemID number low to high if no sorting specified.
 			} else if (request.getParameter("sortBy").equals("bouncinessASC")) { //Bounciness low to high
-				query.concat("ORDER BY Bounciness ASC;");
+				//writer.println("bounciness low/high");
+				query += "ORDER BY Bounciness ASC;";
 			} else if (request.getParameter("sortBy").equals("bouncinessDESC")) { //Bounciness high to low
-				query.concat("ORDER BY Bounciness DESC;");
+				query += "ORDER BY Bounciness DESC;";
 			} else if (request.getParameter("sortBy").equals("categoryASC")) { //Category A to Z
-				query.concat("ORDER BY Category ASC;");
+				query += "ORDER BY Category ASC;";
 			} else if (request.getParameter("sortBy").equals("categoryDESC")) { //Category Z to A
-				query.concat("ORDER BY Category DESC;");
+				query += "ORDER BY Category DESC;";
+			} else if (request.getParameter("sortBy").equals("colorASC")) { //Color A to Z
+				query += "ORDER BY Color ASC;";
+			} else if (request.getParameter("sortBy").equals("colorDESC")) { // Color Z to A
+				query += "ORDER BY Color DESC;";
 			} else if (request.getParameter("sortBy").equals("sizeASC")) { //Size XS to XL
-				query.concat("ORDER BY Size ASC;");
+				query += "ORDER BY Size ASC;";
 			} else if (request.getParameter("sortBy").equals("sizeDESC")) { //Size XL to XS
-				query.concat("ORDER BY Size DESC;");
+				query += "ORDER BY Size DESC;";
 			} else if (request.getParameter("sortBy").equals("subcategoryASC")) { //Subcategory A to Z
-				query.concat("ORDER BY Subcategory ASC;");
+				query += "ORDER BY Subcategory ASC;";
 			} else if (request.getParameter("sortBy").equals("subcategoryDESC")) { //Subcategory Z to A
-				query.concat("ORDER BY Subcategory DESC;");
+				query += "ORDER BY Subcategory DESC;";
 			}
 			
 			//Send query to MySQL.
@@ -151,16 +166,22 @@ public class GetContent extends HttpServlet {
 			 * servlet that has more info.
 			 */
 			while (items.next()) {
-				writer.println("<tr>"
-							+		"<td><center>" + items.getString("Category") + "</center></td>"
-							+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
-							+		"<td><center>" + items.getString("Title") + "</center></td>"
-							+ 		"<td><center>" + items.getString("Description") + "</center></td>"
-							+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
-							+		"<td><center>" + items.getString("Size") + "</center></td>"
-							+		"<td><center><a href = \"CreateAlert?itemID=" + items.getInt("ItemID") + "\">Create Alert For This Item</a></center></td>"
-							+ 	"</tr>" 
-				);
+				auction = getAuction.executeQuery("SELECT AuctionID,Completed FROM Auction WHERE ItemID = " + items.getInt("ItemID") + ";");
+				
+				if (auction.next()) {
+					if (auction.getInt("Completed") == 0) {
+						writer.println("<tr>"
+									+		"<td><center>" + items.getString("Category") + "</center></td>"
+									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
+									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
+									+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
+									+		"<td><center>" + items.getString("Color") + "</center></td>"
+									+		"<td><center>" + items.getString("Size") + "</center></td>"
+									+		"<td><center><a href = \"auction?auctionID=" + auction.getInt("AuctionID") + "\">View Auction For This Item</a></center></td>"
+									+ 	"</tr>" 
+						);
+					}
+				}
 			}
 			
 			writer.println("</table>"
@@ -169,8 +190,10 @@ public class GetContent extends HttpServlet {
 					+ "<br>");
 			
 		} catch (SQLException s) {
+			error = true;
 			writer.println("Failed to get item list: " + s.getMessage() + "<br>");
 		} catch (Exception e) {
+			error = true;
 			writer.println("Failed to get item list: " + e.getMessage() + "<br>");
 			//writer.println(e.getCause());
 		} finally {
@@ -181,6 +204,12 @@ public class GetContent extends HttpServlet {
 				}
 				if (getItems != null) {
 					getItems.close();
+				}
+				if (auction != null) {
+					auction.close();
+				}
+				if (getAuction != null) {
+					getAuction.close();
 				}
 				if (connection != null) {
 					connection.close();

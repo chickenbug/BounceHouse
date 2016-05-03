@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -11,8 +12,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import model.SQLConnector;
 
 /**
  * Servlet implementation class DeleteAllAlerts
@@ -24,6 +23,7 @@ public class DeleteAllAlerts extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -50,7 +50,8 @@ public class DeleteAllAlerts extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			connection = SQLConnector.getConnection();
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			deleteAlert = connection.createStatement();
 			getAlerts = connection.createStatement();
 			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE UserID = " + request.getParameter("userID") + ";");
@@ -61,7 +62,6 @@ public class DeleteAllAlerts extends HttpServlet {
 			if (affectedRows != getNumAlerts.getInt("Count")) {
 				throw new SQLException("An error occurred while deleting the alerts, but the deletion may still have been successful.");
 			}
-			
 		} catch (SQLException s) {
 			error = true;
 			writer.println("Alert deletion failed: " + s.getMessage() + "<br>");
@@ -97,14 +97,12 @@ public class DeleteAllAlerts extends HttpServlet {
 				);
 			} else {
 				response.sendRedirect("ViewAlerts?userID=" + request.getSession().getAttribute("userID"));
+				return;
 			}
-	
 		}
-		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
 }
