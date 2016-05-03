@@ -21,6 +21,7 @@ public class Logout extends HttpServlet {
 		request.getSession().removeAttribute("role");
 		request.getSession().invalidate();
 		response.sendRedirect("index.jsp");
+		return;
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

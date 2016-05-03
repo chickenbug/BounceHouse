@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,8 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.SQLConnector;
-
 @WebServlet(name = "ViewAlerts", urlPatterns = {"/ViewAlerts"})
 public class ViewAlerts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -22,6 +21,7 @@ public class ViewAlerts extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -46,6 +46,7 @@ public class ViewAlerts extends HttpServlet {
 		ResultSet wishlist = null; 
 		ResultSet count = null;
 		boolean error = false;	
+		int numAlerts = 1;
 		
 		if (request.getParameter("userID") == null) {
 			writer.println("Error: cannot load alert list without a user ID specified!<br>"
@@ -57,12 +58,19 @@ public class ViewAlerts extends HttpServlet {
 		} else {
 			writer.println("<center>"
 					+ "<table border = 1 width = 75%>"
+					+ 	"<th>Wishlist Item #</th>"
+					+	"<th>Category</th>"
+					+	"<th>Subcategory</th>"
+					+	"<th>Bounciness</th>"
+					+	"<th>Size</th>"
+					+	"<th>Color</th>"
 			);
 		}
 		
 		
 		try {
-			connection = SQLConnector.getConnection();
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			statement = connection.createStatement();
 			statement2 = connection.createStatement();
 
@@ -77,19 +85,24 @@ public class ViewAlerts extends HttpServlet {
 			}
 			
 			//If username and password are properly set (that is, not null) go ahead and query the DB.
-			wishlist = statement.executeQuery("SELECT ListID,ItemID,Category,Subcategory FROM Wishlist WHERE UserID = " + request.getParameter("userID") + ";");
+			wishlist = statement.executeQuery("SELECT ListID,Category,Subcategory,Bounciness,Color,Size FROM Wishlist WHERE UserID = " + request.getParameter("userID") + ";");
 			
 			//writer.println("Connection created. Statement created. Query Executed.<br>");
 			
 			//Assuming no screwups, there should be one row with field Count == 1. 
 			while (wishlist.next()) {
 				writer.println("<tr>"
-							+		"<td><center>Item #" + wishlist.getString("ItemID") + "</center></td>"
+							+		"<td><center>" + numAlerts + "</center></td>"
 							+		"<td><center>" + wishlist.getString("Category") + "</center></td>"
 							+ 		"<td><center>" + wishlist.getString("Subcategory") + "</center></td>"
+							+ 		"<td><center>" + wishlist.getInt("Bounciness") + "</center></td>"
+							+ 		"<td><center>" + wishlist.getString("Color") + "</center></td>"
+							+ 		"<td><center>" + wishlist.getString("Color") + "</center></td>"
 							+		"<td><center><a href = \"DeleteAlert?listID=" + wishlist.getInt("ListID") + "\">Delete Alert For This Item</a></center></td>"
 							+ 	"</tr>" 
 				);
+				
+				numAlerts++;
 			}
 			
 			writer.println("</table>"

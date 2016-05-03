@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,8 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.SQLConnector;
-
 @WebServlet(name = "Search", urlPatterns = {"/Search"})
 public class Search extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -21,6 +20,7 @@ public class Search extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -49,6 +49,7 @@ public class Search extends HttpServlet {
 		Connection connection = null;
 		Statement getItems = null;
 		ResultSet items = null;
+		boolean error = false;
 		boolean hasOtherParam = false;
 		int count = 0;
 		//boolean hasParamBounciness = false;
@@ -65,7 +66,12 @@ public class Search extends HttpServlet {
 		//Node R1 = null;
 		
 		try {
-			connection = SQLConnector.getConnection();
+			//Opens the driver or something lol
+			Class.forName("com.mysql.jdbc.Driver");
+					
+			//username and password below are placeholders - replace them 
+			//Set up connection to local MySQL server using proper credentials. Create a new query.
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			getItems = connection.createStatement();
 			query = "SELECT * FROM Item";
 
@@ -150,8 +156,10 @@ public class Search extends HttpServlet {
 						+ "<br>");
 					
 			} catch (SQLException s) {
+				error = true;
 				writer.println("Search failed: " + s.getMessage() + "<br>");
 			} catch (Exception e) {
+					error = true;
 					writer.println("Search failed: " + e.getMessage() + "<br>");
 					//writer.println(e.getCause());
 				} finally {

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 	<head>
 		<title>
@@ -76,9 +75,9 @@
 			<br>
 			<br>
 			Birthdate
-			<select name="daydropdown" id = "daydropdown" required></select> 
-			<select name="monthdropdown" id = "monthdropdown" required></select> 
-			<select name="yeardropdown" id = "yeardropdown" required></select> 
+			<select name="daydropdown" id = "daydropdown"></select> 
+			<select name="monthdropdown" id = "monthdropdown"></select> 
+			<select name="yeardropdown" id = "yeardropdown"></select> 
 			<script type="text/javascript">
 				window.onload=function(){
 					populatedropdown("daydropdown", "monthdropdown", "yeardropdown")
@@ -88,36 +87,36 @@
 			<br>
 			Address
 			<br>
-			<input type = "text" name = "address" required>
+			<input type = "text" name = "address">
 			<br>
 			<br>
 			City
 			<br>
-			<input type = "text" name = "city" required>
+			<input type = "text" name = "city">
 			<br>
 			<br>
 			State/Province
 			<br>
-			<input type = "text" name = "state" required>
+			<input type = "text" name = "state">
 			<br>
 			<br>
 			Country
 			<br>
-			<input type = "text" name = "country" required>
+			<input type = "text" name = "country">
 			<br>
 			<br>
 			Post Code
 			<br>
-			<input type = "text" name = "postcode" required>
+			<input type = "text" name = "postcode">
 			<br>
 			<br>
 			Phone Number (Including Country Code and Area Code) 
 			<br>
-			<input type = "text" name = "phone" required> 
+			<input type = "text" name = "phone"> 
 			<%-- this could be type = number but older browsers dont support it (number is defined for HTML5 only) --%>
 			<br>
 			<br>
-			<input type = "submit" value = "Create Account" >
+			<input type = "submit" value = "Create Account">
 		</form>
 	</body>
 </html>

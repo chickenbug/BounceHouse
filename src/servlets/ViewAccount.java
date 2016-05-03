@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,8 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.SQLConnector;
-
 @WebServlet(name = "ViewAccount", urlPatterns = {"/ViewAccount"})
 public class ViewAccount extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -22,6 +21,7 @@ public class ViewAccount extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -47,7 +47,8 @@ public class ViewAccount extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			connection = SQLConnector.getConnection();
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
 			statement = connection.createStatement();
 
 			//If username and password are properly set (that is, not null) go ahead and query the DB.
