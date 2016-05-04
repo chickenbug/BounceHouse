@@ -14,7 +14,7 @@
 			</center>
 		</h3>
 		<hr>
-		Looking for a specific item? Use the following form to search:
+		Looking for a specific item? Use the following form to search (note: this will only return items currently for sale):
 		<form action = "Search" method = post>
 			<br>
 			Bounciness (scored on a scale of one to ten)
@@ -67,11 +67,9 @@
 			<br>
 			<select name = "size" id = "size">
 				<option value = "" selected>No Preference</option>
-				<%-- <option value = "XS">Extra Small</option> --%>
 				<option value = 'S'>Small</option>
-				<%-- <option value = 'M'>Medium</option> --%>
+				<option value = 'M'>Medium</option>
 				<option value = 'L'>Large</option>
-				<option value = 'XL'>Extra Large</option>
 			</select>
 			<br>
 			<br>
@@ -88,5 +86,7 @@
 			<br>
 			<input type = "submit" value = "Search">
 		</form>
+		<br>
+		<a href = "GetContent">Home</a>
 	</body>
 </html>

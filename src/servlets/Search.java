@@ -3,7 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,8 +34,7 @@ public class Search extends HttpServlet {
 								"<center>" +
 								"<h1>Bouncehouse Emporium</h1>" +
 								"<h3>Search Results</h3>" +
-								"<hr>" +
-								"<table border = 1 width = 75%>"
+								"<hr>"
 		);	
 		
 		/*
@@ -47,7 +46,9 @@ public class Search extends HttpServlet {
 		 * user and only returns tuples matching their query exactly.
 		 */
 		Connection connection = null;
+		Statement getAuction = null;
 		Statement getItems = null;
+		ResultSet auction = null;
 		ResultSet items = null;
 		boolean error = false;
 		boolean hasOtherParam = false;
@@ -66,21 +67,17 @@ public class Search extends HttpServlet {
 		//Node R1 = null;
 		
 		try {
-			//Opens the driver or something lol
-			Class.forName("com.mysql.jdbc.Driver");
-					
-			//username and password below are placeholders - replace them 
-			//Set up connection to local MySQL server using proper credentials. Create a new query.
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
+			getAuction = connection.createStatement();
 			getItems = connection.createStatement();
 			query = "SELECT * FROM Item";
 
-			if(request.getParameter("bounciness") != null) {
+			if(request.getParameter("bounciness") != null || !request.getParameter("bounciness").equals("")) {
 				hasOtherParam = true;
 				//hasParamBounciness = true;
 				query += " WHERE Bounciness = \"" + request.getParameter("bounciness") + "\"";
 			} 
-			if (request.getParameter("category") != null) {
+			if (request.getParameter("category") != null || !request.getParameter("category").equals("")) {
 				if (hasOtherParam) {
 					query += " AND ";
 				} else {
@@ -91,7 +88,7 @@ public class Search extends HttpServlet {
 				//hasParamCategory = true;
 				query += "Category = \"" + request.getParameter("category") + "\"";
 			}
-			if (request.getParameter("color") != null) {
+			if (request.getParameter("color") != null || !request.getParameter("color").equals("")) {
 				if (hasOtherParam) {
 					query += " AND ";
 				} else {
@@ -102,7 +99,7 @@ public class Search extends HttpServlet {
 				//hasParamColor = true;
 				query += "Color = \"" + request.getParameter("color") + "\"";
 			}
-			if (request.getParameter("size") != null) {
+			if (request.getParameter("size") != null || !request.getParameter("size").equals("")) {
 				if (hasOtherParam) {
 					query += " AND ";
 				} else {
@@ -113,7 +110,7 @@ public class Search extends HttpServlet {
 				//hasParamSize = true;
 				query += "Size = \"" + request.getParameter("size") + "\"";
 			}
-			if (request.getParameter("subcategory") != null) {
+			if (request.getParameter("subcategory") != null || !request.getParameter("subcategory").equals("")) {
 				if (hasOtherParam) {
 					query += " AND ";
 				} else {
@@ -130,24 +127,41 @@ public class Search extends HttpServlet {
 			items = getItems.executeQuery(query);
 			
 			while (items.next()) {
+				
+				if (count == 0) {
+					writer.println(
+								"<table border = 1 width = 75%>"
+							+		"<th>Category</th>"
+							+		"<th>Subcategory</th>"
+							+		"<th>Description</th>"
+							+		"<th>Bounciness</th>"
+							+		"<th>Color</th>"
+							+		"<th>Size</th>"
+					);
+				}
+				
+				auction = getItems.executeQuery("SELECT AuctionID,Completed FROM Auction WHERE ItemID = " + items.getInt("ItemID") + ";");
+				
+				if (auction.next()) {
+					if (auction.getInt("Completed") == 0) {
+						writer.println("<tr>"
+								+		"<td><center>" + items.getString("Category") + "</center></td>"
+								+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
+								+ 		"<td><center>" + items.getString("Description") + "</center></td>"
+								+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
+								+		"<td><center>" + items.getString("Color") + "</center></td>"
+								+		"<td><center>" + items.getString("Size") + "</center></td>"
+								+		"<td><center><a href = \"auction?auctionID=" + auction.getInt("AuctionID") + "\">View Auction</a></center></td>"
+								+ 	"</tr>" 
+						);
+					}
+				}
+				
 				count++;
-				writer.println("<tr>"
-						+		"<td><center>" + items.getString("Category") + "</center></td>"
-						+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
-						+ 		"<td><center>" + items.getString("Description") + "</center></td>"
-						+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
-						+		"<td><center>" + items.getString("Color") + "</center></td>"
-						+		"<td><center>" + items.getString("Size") + "</center></td>"
-						+		"<td><center><a href = \"CreateAlert?itemID=" + items.getInt("ItemID") + "\">Create Alert For This Item</a></center></td>"
-						+ 	"</tr>" 
-				);
 			}
 			
 			if (count == 0) {
-				writer.println("<tr>"
-						+ 	"<td><center>We're sorry, but there were no items matching your search query.</center></td>"
-						+	"</tr>"
-				);
+				writer.println("We're sorry, but there were no items matching your search query.<br>");
 			}
 			
 			writer.println("</table>"

@@ -3,13 +3,12 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -49,9 +48,7 @@ public class ForgotUsername extends HttpServlet {
 		int userID = 0;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			//username and password below are placeholders - replace them 
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			getUsername = connection.createStatement();
 			
 			resultSet = getUsername.executeQuery("SELECT Username, UserID FROM User WHERE Email = \"" + request.getParameter("email") + "\";");
@@ -109,8 +106,12 @@ public class ForgotUsername extends HttpServlet {
 			
 			if (error) {
 				writer.println("Please click <a href = \"ForgotUsername\">here</a> to try again."
-						+ 		"</body>"
-						+ 	"</html>"
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			} else {
 				response.sendRedirect("index.jsp");
