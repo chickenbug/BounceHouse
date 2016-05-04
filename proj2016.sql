@@ -59,10 +59,9 @@ CREATE TABLE Auction(
 
 CREATE TABLE Alert(
 	AlertID int(9) NOT NULL AUTO_INCREMENT,
-	AuctionID int(9) NOT NULL,
+	ItemID int(9) NOT NULL,
 	UserID int(9) NOT NULL,
-	Completed int(1) NOT NULL,
-	FOREIGN KEY (AuctionID) REFERENCES Auction (AuctionID) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (ItemID) REFERENCES Item (ItemID) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(AlertID)
 );
@@ -159,21 +158,19 @@ END!
 
 DROP TRIGGER IF EXISTS insertAlert!
 
-CREATE TRIGGER insertAlert AFTER INSERT ON Auction
+CREATE TRIGGER insertAlert AFTER INSERT ON Item
 FOR EACH ROW BEGIN
-	IF (NEW.ItemID IN (SELECT ItemID FROM Wishlist)) THEN
-		INSERT INTO Alert(AuctionID, UserID, Completed)
-        SELECT DISTINCT NEW.AuctionID, UserID, NEW.Completed FROM WishList WHERE ItemID = NEW.ItemID;
+	IF (NEW.Bounciness IN (SELECT Bounciness FROM Wishlist) AND NEW.Category IN (SELECT Category FROM Wishlist) AND NEW.Color IN (SELECT Color FROM Wishlist) AND NEW.Size IN (Select Size FROM Wishlist) AND New.SubCategory IN (Select SubCategory FROM Wishlist)) THEN
+		INSERT INTO Alert(ItemID, UserID)
+        SELECT DISTINCT NEW.ItemID, UserID FROM WishList WHERE Bounciness = NEW.Bounciness AND Category = NEW.Category AND Color = NEW.Color AND Size = NEW.Size AND SubCategory = NEW.SubCategory;
 	END IF;
 END!
 
-DROP TRIGGER IF EXISTS updateAlert! 
+DROP TRIGGER IF EXISTS alertRep!
 
-CREATE TRIGGER updateAlert AFTER UPDATE ON Auction
+CREATE TRIGGER alertRep AFTER INSERT ON Question
 FOR EACH ROW BEGIN
-	IF (NEW.Completed <> OLD.Completed) THEN
-		UPDATE Alert SET Completed = NEW.Completed WHERE AuctionID = NEW.AuctionID;
-	END IF;
+		INSERT INTO Email(Content,Recipient,RecipientID,Sender,SenderID,SendTime) VALUES ("New question posted! You are the responding representative.", (SELECT Email FROM User WHERE UserID = NEW.RepID), NEW.RepID, "system@bouncehouseemporium", "1", NOW());
 END!
 
 DELIMITER ;
