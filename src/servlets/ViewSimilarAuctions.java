@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class ViewAuctions
  */
-@WebServlet(name = "ViewAuctions", urlPatterns = {"/ViewAuctions"})
-public class ViewAuctions extends HttpServlet {
+@WebServlet(name = "ViewSimilarAuctions", urlPatterns = {"/ViewSimilarAuctions"})
+public class ViewSimilarAuctions extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,18 +44,16 @@ public class ViewAuctions extends HttpServlet {
 				+	"<body>" 
 				+		"<center>" 
 				+			"<h1>Bouncehouse Emporium</h1>" 
-				+			"<h3>View Auctions</h3>"
+				+			"<h3>Viewing Similar Auctions</h3>"
 				+			"<hr>"
 				+			"<table border = 1 width = 100%>"
 				+			"<th>Category</th>"
 				+			"<th>Subcategory</th>"
 				+			"<th>Description</th>"
 				+			"<th>Close Date</th>"
-				+			"<th>See The Auction For This Item</th>"
 				+			"<th>Current Max Bid</th>"
-				+			"<th>See The Bid History For This Item</th>"
-				+			"<th>View Auctions On Similar Items</th>"
-		);
+				+			"<th>View Auction For This Item</th>"
+				);
 
 		if (request.getSession().getAttribute("role").equals("rep")){
 			writer.println("<th>Remove This Auction</th>");
@@ -78,14 +76,16 @@ public class ViewAuctions extends HttpServlet {
 			getItems = connection.createStatement();
 			getBid = connection.createStatement();
 
-			auctions = getAuctions.executeQuery("SELECT AuctionID,CloseDate,ItemID FROM Auction WHERE Completed = 0 ORDER BY CloseDate ASC;");
+			auctions = getAuctions.executeQuery("SELECT A.AuctionID,A.CloseDate,A.ItemID FROM Auction A WHERE A.Completed = 0 AND \"" + request.getParameter("category") 
+					+ "\" IN (SELECT Category FROM Item WHERE ItemID = A.ItemID) AND \"" + request.getParameter("subcategory") + "\" IN (SELECT SubCategory FROM Item WHERE"
+							+ " ItemID = A.ItemID) ORDER BY A.CloseDate ASC;");
 
 			/*
 			 * Process request and output HTML.
 			 */
 			while (auctions.next()) {
 				int auctionID = auctions.getInt("AuctionID");
-				items = getItems.executeQuery("SELECT Category,SubCategory,Description FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
+				items = getItems.executeQuery("SELECT Category,SubCategory,Description FROM Item WHERE ItemID =" + auctions.getString("ItemID") + ";");
 				
 				while (items.next()) {
 					bid = getBid.executeQuery("SELECT MAX(Amount) AS MaxBid FROM Bid WHERE AuctionID = " + auctions.getInt("AuctionID") + ";");
@@ -96,12 +96,8 @@ public class ViewAuctions extends HttpServlet {
 								+		"<td><center>" + items.getString("SubCategory") + "</center></td>"
 								+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 								+ 		"<td><center>Closes on " + auctions.getString("CloseDate") + "</center></td>"
-								+		"<td><center><a href = \"auction?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" 
 								+		"<td><center>" +  bid.getInt("MaxBid") + "</center></td>"
-								+		"<td><center><a href = \"ViewBidHistory?auctionID=" + auctions.getInt("AuctionID") + "\">View Bid History</a></center></td>"
-								+		"<td><center><a href = \"ViewSimilarAuctions?auctionId=" + auctions.getInt("AuctionID") + "&category="
-								+ 			items.getString("Category") + "&subcategory=" + items.getString("SubCategory") + "\">View Similar Auctions</a></center>"
-								+			"</td>"
+								+		"<td><center><a href = \"auction?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" 
 							
 						);
 					
@@ -109,8 +105,6 @@ public class ViewAuctions extends HttpServlet {
 							writer.println("<td><center><form action=\"ViewAuctions\" method=\"post\" onsubmit=\"return confirm('Confirm Removal?');\">"
 									+ "<INPUT TYPE=\"submit\" VALUE=\"Remove\"><input type = \"hidden\" name = \"aucID\" value = "+auctionID+"></form></center></td>");
 						}
-						
-						
 					}
 				}
 			}
@@ -167,7 +161,7 @@ public class ViewAuctions extends HttpServlet {
 
 			//Write closing html for page.
 			writer.println(
-					"</center>"
+								"<center>"
 							+ 	"<br>"
 							+ 	"<br>"
 							+	"<a href = \"GetContent\">Home</a>"

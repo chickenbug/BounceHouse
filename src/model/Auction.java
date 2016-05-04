@@ -15,8 +15,10 @@ public class Auction {
 	public int user_id;
 	public float win_bid;
 	public int winID;
+	public int increment;
 	
-	public Auction(int AuctionID, Timestamp close_date, int completed, int itemID, float min_bid, int user_id, float win_bid, int winID){
+	public Auction(int AuctionID, Timestamp close_date, int completed, int itemID,
+			float min_bid, int user_id, float win_bid, int winID, int increment){
 		this.AuctionID = AuctionID;
 		this.close_date = close_date;
 		this.completed = completed;
@@ -25,6 +27,7 @@ public class Auction {
 		this.user_id = user_id;
 		this.win_bid = win_bid;
 		this.winID = winID;
+		this.increment = increment;
 	}
 	
 	public static int findWinID(int auctionID){
@@ -33,7 +36,11 @@ public class Auction {
 			Statement s = con.createStatement();
 			ResultSet rs = s.executeQuery("SELECT WinnerID FROM Auction WHERE AuctionID = "+ auctionID);
 			if(!rs.next()) return -1;
-			return rs.getInt("WinnerID"); 
+			int winID = rs.getInt("WinnerID"); 
+			con.close();
+			s.close();
+			rs.close();
+			return winID;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
 			System.out.println("Unable to find WinBid");
@@ -48,7 +55,11 @@ public class Auction {
 			Statement s = con.createStatement();
 			ResultSet rs = s.executeQuery("SELECT WinBid FROM Auction WHERE AuctionID = "+ auctionID);
 			if(!rs.next()) return -1;
-			return rs.getFloat("WinBid"); 
+			float winBid = rs.getFloat("WinBid");
+			con.close();
+			s.close();
+			rs.close();
+			return winBid;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
 			System.out.println("Unable to find WinBid");
@@ -61,6 +72,8 @@ public class Auction {
 			Connection con = SQLConnector.getConnection();
 			Statement s = con.createStatement();
 			s.executeUpdate("UPDATE Auction SET WinBid = " + winBid+ ", WinnerID = " + userID + " WHERE AuctionID = "+ auctionID);
+			con.close();
+			s.close();
 			return true;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
@@ -83,7 +96,11 @@ public class Auction {
 					rs.getFloat("MinBid"),
 					rs.getInt("UserID"),
 					rs.getFloat("WinBid"),
-					rs.getInt("WinnerID"));
+					rs.getInt("WinnerID"),
+					rs.getInt("BidIncrement"));
+			con.close();
+			s.close();
+			rs.close();
 			return a;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){

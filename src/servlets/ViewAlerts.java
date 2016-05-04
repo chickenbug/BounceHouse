@@ -78,11 +78,11 @@ public class ViewAlerts extends HttpServlet {
 					+	"<th>Subcategory</th>"
 					+	"<th>Bounciness</th>"
 					+	"<th>Size</th>"
-					+	"<th>Color</th>"
+					+	"<th>Delete This Alert</th>"
 			);
 			
 			//If username and password are properly set (that is, not null) go ahead and query the DB.
-			wishlist = statement.executeQuery("SELECT ListID,Category,Subcategory,Bounciness,Color,Size FROM Wishlist WHERE UserID = " + request.getParameter("userID") + ";");
+			wishlist = statement.executeQuery("SELECT ListID,Category,Subcategory,Bounciness,Size FROM Wishlist WHERE UserID = " + request.getParameter("userID") + ";");
 			
 			//writer.println("Connection created. Statement created. Query Executed.<br>");
 			
@@ -93,8 +93,7 @@ public class ViewAlerts extends HttpServlet {
 							+		"<td><center>" + wishlist.getString("Category") + "</center></td>"
 							+ 		"<td><center>" + wishlist.getString("Subcategory") + "</center></td>"
 							+ 		"<td><center>" + wishlist.getInt("Bounciness") + "</center></td>"
-							+ 		"<td><center>" + wishlist.getString("Color") + "</center></td>"
-							+ 		"<td><center>" + wishlist.getString("Color") + "</center></td>"
+							+ 		"<td><center>" + wishlist.getString("Size") + "</center></td>"
 							+		"<td><center><a href = \"DeleteAlert?listID=" + wishlist.getInt("ListID") + "\">Delete Alert For This Item</a></center></td>"
 							+ 	"</tr>" 
 				);

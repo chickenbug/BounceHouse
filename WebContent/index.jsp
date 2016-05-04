@@ -17,7 +17,7 @@
 			<br>
 			<input type = "text" name = "username">
 			<br>
-			<br>
+			<br>	
 			Password
 			<br>
 			<input type = "password" name = "password">

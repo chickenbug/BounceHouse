@@ -86,18 +86,7 @@ public class Search extends HttpServlet {
 				
 				hasOtherParam = true;
 				//hasParamCategory = true;
-				query += "Category = \"" + request.getParameter("category") + "\"";
-			}
-			if (request.getParameter("color") != null || !request.getParameter("color").equals("")) {
-				if (hasOtherParam) {
-					query += " AND ";
-				} else {
-					query += " WHERE ";
-				}
-				
-				hasOtherParam = true;
-				//hasParamColor = true;
-				query += "Color = \"" + request.getParameter("color") + "\"";
+				query += "  Category = \"" + request.getParameter("category") + "\"";
 			}
 			if (request.getParameter("size") != null || !request.getParameter("size").equals("")) {
 				if (hasOtherParam) {
@@ -108,7 +97,7 @@ public class Search extends HttpServlet {
 				
 				hasOtherParam = true;
 				//hasParamSize = true;
-				query += "Size = \"" + request.getParameter("size") + "\"";
+				query += " Size = \"" + request.getParameter("size") + "\"";
 			}
 			if (request.getParameter("subcategory") != null || !request.getParameter("subcategory").equals("")) {
 				if (hasOtherParam) {
@@ -119,7 +108,7 @@ public class Search extends HttpServlet {
 				
 				hasOtherParam = true;
 				//hasParamSubcategory = true;
-				query += "Subcategory = \"" + request.getParameter("subcategory") + "\"";
+				query += " SubCategory = \"" + request.getParameter("subcategory") + "\"";
 			}
 			
 			query += ";";
@@ -140,16 +129,15 @@ public class Search extends HttpServlet {
 					);
 				}
 				
-				auction = getItems.executeQuery("SELECT AuctionID,Completed FROM Auction WHERE ItemID = " + items.getInt("ItemID") + ";");
+				auction = getAuction.executeQuery("SELECT AuctionID,Completed FROM Auction WHERE ItemID = " + items.getInt("ItemID") + ";");
 				
 				if (auction.next()) {
 					if (auction.getInt("Completed") == 0) {
 						writer.println("<tr>"
 								+		"<td><center>" + items.getString("Category") + "</center></td>"
-								+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
+								+		"<td><center>" + items.getString("SubCategory") + "</center></td>"
 								+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 								+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
-								+		"<td><center>" + items.getString("Color") + "</center></td>"
 								+		"<td><center>" + items.getString("Size") + "</center></td>"
 								+		"<td><center><a href = \"auction?auctionID=" + auction.getInt("AuctionID") + "\">View Auction</a></center></td>"
 								+ 	"</tr>" 
@@ -172,6 +160,7 @@ public class Search extends HttpServlet {
 			} catch (SQLException s) {
 				error = true;
 				writer.println("Search failed: " + s.getMessage() + "<br>");
+				s.printStackTrace();
 			} catch (Exception e) {
 					error = true;
 					writer.println("Search failed: " + e.getMessage() + "<br>");
@@ -179,6 +168,12 @@ public class Search extends HttpServlet {
 				} finally {
 					//Close resultset, statement, connection.
 					try {
+						if (auction != null) {
+							auction.close();
+						}
+						if (getAuction != null) {
+							getAuction.close();
+						}
 						if (items != null) {
 							items.close();
 						}

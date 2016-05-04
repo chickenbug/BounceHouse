@@ -1,15 +1,17 @@
 CREATE DATABASE IF NOT EXISTS proj2016;
 USE proj2016;
 
+/*
+DROP TABLE IF EXISTS Alert;
 DROP TABLE IF EXISTS Auction;
 DROP TABLE IF EXISTS AutoBid;
 DROP TABLE IF EXISTS Bid;
-DROP TABLE IF EXISTS Card;
 DROP TABLE IF EXISTS Email;
-DROP TABLE IF EXISTS Item;
-DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Question;
 DROP TABLE IF EXISTS Wishlist;
+DROP TABLE IF EXISTS Item;
+DROP TABLE IF EXISTS User;
+*/
 
 CREATE TABLE User(
 	Address varchar(255) DEFAULT NULL,
@@ -29,21 +31,26 @@ CREATE TABLE User(
 	PRIMARY KEY(UserID)
 );
 
-INSERT INTO User(Username,Password,UserID,Role) VALUES("tgoetjen","password",1,"admin");
+INSERT INTO User VALUES(NULL,NULL,NULL,NULL,"system@bouncehouseemporium",NULL,NULL,"password",NULL,NULL,"admin", NULL,"1","system");
+INSERT INTO User VALUES(NULL, NULL, NULL, NULL, 'tgoetjen@gmail.com', 'Tim','Goetjen', 'password', NULL, 
+	NULL,'admin',NULL,2,'tgoetjen');
+INSERT INTO User VALUES(NULL, NULL, NULL, NULL, 'kinhhoang@gmail.com', 'Kinh','Hoang', 'hoang', NULL, 
+	NULL,'rep',NULL,3,'kinh');
 
 CREATE TABLE Item(
-	ItemID int(9) NOT NULL AUTO_INCREMENT,
 	Bounciness int(2) DEFAULT 0,
 	Category varchar(255) DEFAULT NULL,
-	Title varchar(3000) DEFAULT NULL,
 	Description varchar(3000) DEFAULT NULL,
-	Size varchar(2) DEFAULT NULL, 
+	ItemID int(9) NOT NULL AUTO_INCREMENT,
+	Size varchar(2) DEFAULT NULL,
 	SubCategory varchar(255) DEFAULT NULL,
+	Title varchar(255) DEFAULT NULL,
 	PRIMARY KEY(ItemID)
 );
 
 CREATE TABLE Auction(
 	AuctionID int(9) NOT NULL AUTO_INCREMENT,
+	BidIncrement int(2) DEFAULT 1,
 	CloseDate datetime DEFAULT NULL,
 	Completed int(1) DEFAULT 0,
 	ItemID int(9) NOT NULL,
@@ -87,16 +94,6 @@ CREATE TABLE Bid(
 	PRIMARY KEY(BidID)
 );
 
-CREATE TABLE Card(
-	CardNumber bigint(16) NOT NULL,
-	ExpirationDate date DEFAULT NULL,
-	Name varchar(255) DEFAULT NULL,
-	Type varchar(7) DEFAULT NULL,
-	UserID int(9) NOT NULL,
-	FOREIGN KEY (UserID) REFERENCES User (UserID) ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY(CardNumber)
-);
-
 /* 
 	NULLS are allowed in this table only so that a deletion from "User" won't break a record -
 	we do not want to cascade a delete (we lose records of our communication) or take no action 
@@ -138,7 +135,6 @@ CREATE TABLE Question(
 CREATE TABLE Wishlist(
 	Bounciness int(2) DEFAULT 0, /* On a scale of {1, 2, ... 10} */
 	Category varchar(255) DEFAULT NULL,
-	Color varchar(255) DEFAULT NULL,
 	ListID int(9) NOT NULL AUTO_INCREMENT,
 	Size varchar(2) DEFAULT NULL,
 	SubCategory varchar(255) DEFAULT NULL,
@@ -160,15 +156,14 @@ DROP TRIGGER IF EXISTS insertAlert!
 
 CREATE TRIGGER insertAlert AFTER INSERT ON Item
 FOR EACH ROW BEGIN
-	IF (NEW.Bounciness IN (SELECT Bounciness FROM Wishlist) AND NEW.Category IN (SELECT Category FROM Wishlist) AND NEW.Color IN (SELECT Color FROM Wishlist) AND NEW.Size IN (Select Size FROM Wishlist) AND New.SubCategory IN (Select SubCategory FROM Wishlist)) THEN
-		INSERT INTO Alert(ItemID, UserID)
-        SELECT DISTINCT NEW.ItemID, UserID FROM WishList WHERE Bounciness = NEW.Bounciness AND Category = NEW.Category AND Color = NEW.Color AND Size = NEW.Size AND SubCategory = NEW.SubCategory;
+	IF (NEW.Bounciness IN (SELECT Bounciness FROM Wishlist) AND NEW.Category IN (SELECT Category FROM Wishlist) AND NEW.Size IN (Select Size FROM Wishlist) AND New.SubCategory IN (Select SubCategory FROM Wishlist)) THEN
+		INSERT INTO Alert(ItemID, UserID) SELECT DISTINCT NEW.ItemID, UserID FROM Wishlist WHERE Bounciness = NEW.Bounciness AND Category = NEW.Category AND Size = NEW.Size AND SubCategory = NEW.SubCategory;
 	END IF;
 END!
 
-DROP TRIGGER IF EXISTS alertRep!
+DROP TRIGGER IF EXISTS alertRepOnNewQuestion!
 
-CREATE TRIGGER alertRep AFTER INSERT ON Question
+CREATE TRIGGER alertRepOnNewQuestion AFTER INSERT ON Question
 FOR EACH ROW BEGIN
 		INSERT INTO Email(Content,Recipient,RecipientID,Sender,SenderID,SendTime) VALUES ("New question posted! You are the responding representative.", (SELECT Email FROM User WHERE UserID = NEW.RepID), NEW.RepID, "system@bouncehouseemporium", "1", NOW());
 END!

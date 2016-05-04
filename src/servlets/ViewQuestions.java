@@ -34,7 +34,7 @@ public class ViewQuestions extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("rep")) {
+		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
@@ -70,7 +70,7 @@ public class ViewQuestions extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			getQuestions = connection.createStatement();
 
-			questions = getQuestions.executeQuery("SELECT Q.*, U.username, U1.firstname FROM question Q, user U, user U1 WHERE U.userid=Q.userid AND Q.repid=U1.userid;");
+			questions = getQuestions.executeQuery("SELECT Q.*, U.Username, U1.FirstName FROM Question Q, User U, User U1 WHERE U.UserID=Q.UserID AND Q.RepID=U1.UserID;");
 
 			/*
 			 * Process request and output HTML.
@@ -88,10 +88,10 @@ public class ViewQuestions extends HttpServlet {
 					);
 			while (questions.next()) {
 				writer.println("<tr>"
-						+		"<td><center>" + questions.getString("Q.topic") + "</center></td>"
-						+		"<td><center>" + questions.getString("Q.qtext") + "</center></td>"
-						+		"<td><center>" + questions.getString("U.username") + "</center></td>"
-						+		"<td><center>"+ questions.getString("U1.firstname") + "</center></td>"
+						+		"<td><center>" + questions.getString("Q.Topic") + "</center></td>"
+						+		"<td><center>" + questions.getString("Q.QText") + "</center></td>"
+						+		"<td><center>" + questions.getString("U.Username") + "</center></td>"
+						+		"<td><center>"+ questions.getString("U1.FirstName") + "</center></td>"
 						);
 				if(request.getSession().getAttribute("role").equals("rep")){
 					if(questions.getString("answer")!=null){

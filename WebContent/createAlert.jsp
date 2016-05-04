@@ -25,11 +25,6 @@
 				<option value = "3">3</option>
 				<option value = "4">4</option>
 				<option value = "5">5</option>
-				<option value = "6">6</option>
-				<option value = "7">7</option>
-				<option value = "8">8</option>
-				<option value = "9">9</option>
-				<option value = "10">10</option>
 			</select>
 			<br>
 			<br>
@@ -40,23 +35,6 @@
 				<option value = "Slide">Slide</option>
 				<option value = "Activity">Castle</option>
 				<option value = "Other">Other</option>
-			</select>
-			<br>
-			<br>
-			Color
-			<br>
-			<select name = "color" id = "color">
-				<option value = "Black">Black</option>
-				<option value = "Blue">Blue</option>
-				<option value = "Brown">Brown</option>
-				<option value = "Green">Green</option>
-				<option value = "Multi">Multi-colored</option>
-				<option value = "Orange">Orange</option>
-				<option value = "Pink">Pink</option>
-				<option value = "Purple">Purple</option>
-				<option value = "Red">Red</option>
-				<option value = "White">White</option>
-				<option value = "Yellow">Yellow</option>
 			</select>
 			<br>
 			<br>

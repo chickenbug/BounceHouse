@@ -79,11 +79,10 @@ public class RecievedAlerts extends HttpServlet {
 									+		"<th>Subcategory</th>"
 									+		"<th>Bounciness</th>"
 									+		"<th>Size</th>"
-									+		"<th>Color</th>"
 									+		"<th>View Auction For This Item</th>");
 						}
 						
-						item = getItem.executeQuery("SELECT Bounciness,Category,Color,Size,Subcategory FROM Item WHERE ItemID = " + alerts.getInt("ItemID") + ";");
+						item = getItem.executeQuery("SELECT Bounciness,Category,Size,SubCategory,ItemID FROM Item WHERE ItemID = " + alerts.getInt("ItemID") + ";");
 						
 						if (item.next()) {
 							auction = getAuction.executeQuery("SELECT AuctionID FROM Auction WHERE ItemID = " + item.getInt("itemID") + ";");
@@ -92,11 +91,10 @@ public class RecievedAlerts extends HttpServlet {
 								writer.println("<tr>"
 										+		"<td><center>" + auction.getInt("AuctionID") + "</center></td>"
 										+ 		"<td><center>" + item.getString("Category") + "</center></td>"
-										+ 		"<td><center>" + item.getString("Subcategory") + "</center></td>"
+										+ 		"<td><center>" + item.getString("SubCategory") + "</center></td>"
 										+ 		"<td><center>" + item.getInt("Bounciness") + "</center></td>"
 										+ 		"<td><center>" + item.getString("Size") + "</center></td>"
-										+ 		"<td><center>" + item.getString("Color") + "</center></td>"
-										+		"<td><center><a href = \"auction?auctionID=" + alerts.getInt("AuctionID") + "\">View This Auction</a></center></td>"
+										+		"<td><center><a href = \"auction?auctionID=" + auction.getInt("AuctionID") + "\">View This Auction</a></center></td>"
 										+ 	"</tr>" 
 								);
 							}

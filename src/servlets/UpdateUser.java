@@ -47,7 +47,7 @@ public class UpdateUser extends HttpServlet {
 		int affectedRows = 0;
 		boolean error = false;
 		boolean hasOtherParam = false;
-		String update = "UPDATE USER ";
+		String update = "UPDATE User ";
 		
 		if (request.getParameter("address") != null && !request.getParameter("address").equals("")) {
 			hasOtherParam = true;

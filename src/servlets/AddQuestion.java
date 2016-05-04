@@ -46,7 +46,11 @@ public class AddQuestion extends HttpServlet {
 
 			ResultSet r = s.getGeneratedKeys();
 			r.next();
-			return r.getInt(1);
+			int key = r.getInt(1);
+			con.close();
+			s.close();
+			r.close();
+			return key;
 
 
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
@@ -77,7 +81,7 @@ public class AddQuestion extends HttpServlet {
 		Connection con;
 		try {
 			con = SQLConnector.getConnection();
-			String sql = "Select userID from user where role = \"rep\";";
+			String sql = "SELECT UserID FROM User WHERE Role = \"rep\";";
 			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			String qtext = request.getParameter("qtext");
 			String topic = request.getParameter("topic");
@@ -91,6 +95,9 @@ public class AddQuestion extends HttpServlet {
 			int repid = repNums.get(rando);
 			int userid = (Integer)request.getSession().getAttribute("userID");
 			int QuestionID = insert_question(qtext, repid, userid, topic, response);
+			con.close();
+			s.close();
+			rs.close();
 			if(QuestionID==0){
 				response.sendRedirect("error.html");
 				return;

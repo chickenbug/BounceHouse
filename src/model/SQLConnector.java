@@ -3,7 +3,7 @@ import java.sql.*;
 
 /**
  * Provides the Controller a connection between the program's logic and the model.
- * @author Team 17
+ * @author Team 5
  *
  */
 
@@ -18,9 +18,9 @@ public class SQLConnector {
 	 */
 	private static final String dbUser = "root";
 	/**
-	 * Database amdin password.
+	 * Database admin password.
 	 */
-	private static final String dbPassword = "sqlpls7";
+	private static final String dbPassword = "pw";
 	/**
 	 * SQLConnector instance connection object.
 	 */
@@ -36,7 +36,7 @@ public class SQLConnector {
 	/**
 	 * Maximum number of simultaneous live connection on Database.
 	 */
-	private final static int maxConnections = 150;
+	private final static int maxConnections = 1000000;
 	
 	/**
 	 * SQLConnector constructor.

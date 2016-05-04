@@ -38,6 +38,9 @@ public class Item {
 				rs.getString("Description"),
 				rs.getString("Size"),
 				rs.getString("SubCategory"));
+		con.close();
+		s.close();
+		rs.close();
 		return i;
 		}
 		catch(NumberFormatException | IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){

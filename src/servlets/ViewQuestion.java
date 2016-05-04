@@ -45,17 +45,21 @@ public class ViewQuestion extends HttpServlet {
 
 			Connection con = SQLConnector.getConnection();
 			Statement s = con.createStatement();
-			ResultSet rs = s.executeQuery("SELECT Q.*, U.firstname, U1.username FROM Question Q, User U, User U1 WHERE Q.QuestionID = "
-					+ questionID+" AND U.userid=Q.repid AND U1.userid=Q.userid");
+			ResultSet rs = s.executeQuery("SELECT Q.*, U.FirstName, U1.Username FROM Question Q, User U, User U1 WHERE Q.QuestionID = "
+					+ questionID+" AND U.UserID=Q.RepID AND U1.UserID=Q.UserID");
 			if(!rs.next()) {throw new NoSuchElementException();}
 
-			request.setAttribute("topic",rs.getString("Q.topic"));
-			request.setAttribute("qtext",rs.getString("Q.qtext"));
-			request.setAttribute("username",rs.getString("U1.username"));
-			request.setAttribute("repname",rs.getString("U.firstname"));
-			request.setAttribute("answer",rs.getString("answer"));
+			request.setAttribute("topic",rs.getString("Q.Topic"));
+			request.setAttribute("qtext",rs.getString("Q.QText"));
+			request.setAttribute("username",rs.getString("U1.Username"));
+			request.setAttribute("repname",rs.getString("U.FirstName"));
+			request.setAttribute("answer",rs.getString("Answer"));
 			request.setAttribute("role", request.getSession().getAttribute("role"));
 			request.setAttribute("qid", questionID);
+			
+			con.close();
+			s.close();
+			rs.close();
 			request.getRequestDispatcher("WEB-INF/question.jsp?" + questionID).forward(request, response);
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
@@ -77,10 +81,13 @@ public class ViewQuestion extends HttpServlet {
 		int questionID = Integer.parseInt(request.getQueryString());
 		try {
 			Connection con = SQLConnector.getConnection();
-			String sql = "UPDATE question set answer = (?) where questionid = "+questionID;
+			String sql = "UPDATE Question SET Answer = (?) WHERE QuestionID = "+questionID;
 			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			s.setString(1,answer);
 			s.executeUpdate();
+			
+			con.close();
+			s.close();
 			response.sendRedirect("question?" + questionID);
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 			response.sendRedirect("error.html");

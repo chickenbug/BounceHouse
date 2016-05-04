@@ -52,11 +52,10 @@ public class CreateAlert extends HttpServlet {
 			insertAlert = connection.createStatement();
 			
 			//Error checking code - check if an entry already exists in the wishlist table for this user and item.
-			hasAlertForThisItem = selectItem.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE UserID = "
+			hasAlertForThisItem = selectItem.executeQuery("SELECT COUNT(*) AS Count FROM Wishlist WHERE UserID = "
 								+	Integer.parseInt(request.getSession().getAttribute("userID").toString()) 
 								+	" AND Bounciness = \"" + request.getParameter("bounciness") + "\""
 								+	" AND Category = \"" + request.getParameter("category") + "\""
-								+	" AND Color = \"" + request.getParameter("color") + "\""
 								+	" AND Size = \"" + request.getParameter("size") + "\""
 								+	" AND SubCategory = \"" + request.getParameter("subcategory") + "\""
 								+	";"
@@ -69,11 +68,10 @@ public class CreateAlert extends HttpServlet {
 				}
 			}
 			
-			affectedRows = insertAlert.executeUpdate("INSERT INTO Wishlist(Bounciness, Category, Color, Size, Subcategory, UserID)" 
+			affectedRows = insertAlert.executeUpdate("INSERT INTO Wishlist(Bounciness, Category, Size, Subcategory, UserID)" 
 							+   " VALUES(" 
 							+	request.getParameter("bounciness") + ","
 							+	"\"" +	request.getParameter("category")									+ "\","
-							+	"\"" +	request.getParameter("color") 										+ "\","
 							+	"\"" +	request.getParameter("size") 										+ "\","
 							+	"\"" +	request.getParameter("subcategory")									+ "\","
 							+ 	Integer.parseInt(request.getSession().getAttribute("userID").toString())	+ ");"

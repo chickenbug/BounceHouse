@@ -73,7 +73,7 @@ public class ViewAccounts extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			getUsers = connection.createStatement();
 
-			users = getUsers.executeQuery("SELECT * FROM User WHERE role = \"EndUser\";");
+			users = getUsers.executeQuery("SELECT * FROM User WHERE Role = \"EndUser\";");
 
 			/*
 			 * Process request and output HTML.
@@ -81,17 +81,17 @@ public class ViewAccounts extends HttpServlet {
 			writer.println("<tr>"
 					+		"<td><center> UserID </center></td>"
 					+		"<td><center> Username </center></td>"
-					+		"<td><center> Firstname </center></td>"
-					+ 		"<td><center> Lastname </center></td>"
+					+		"<td><center> FirstName </center></td>"
+					+ 		"<td><center> LastName </center></td>"
 					+ 		"<td><center> Options </center></td>"
 					);
 			while (users.next()) {
-				int userID = Integer.parseInt(users.getString("userID"));
+				int userID = Integer.parseInt(users.getString("UserID"));
 				writer.println("<tr>"
 						+		"<td><center>" + users.getString("UserID") + "</center></td>"
 						+		"<td><center>" + users.getString("Username") + "</center></td>"
-						+		"<td><center>"+ users.getString("Firstname") + "</center></td>"
-						+ 		"<td><center>" + users.getString("Lastname") + "</center></td>"
+						+		"<td><center>"+ users.getString("FirstName") + "</center></td>"
+						+ 		"<td><center>" + users.getString("LastName") + "</center></td>"
 						+		"<td><center><form action = \"ViewAccount\" method = \"post\">"
 						+ 		"<input type = \"submit\" value = \"Edit Account\">"
 						+ 		"<input type = \"hidden\" name = \"userID\" value = "+userID+"></form>"

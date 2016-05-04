@@ -52,8 +52,8 @@ public class DeleteAllAlerts extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			deleteAlert = connection.createStatement();
 			getAlerts = connection.createStatement();
-			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE UserID = " + request.getParameter("userID") + ";");
-			affectedRows = deleteAlert.executeUpdate("DELETE FROM WishList WHERE UserID = " + request.getParameter("userID") + ";"); 
+			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM Wishlist WHERE UserID = " + request.getParameter("userID") + ";");
+			affectedRows = deleteAlert.executeUpdate("DELETE FROM Wishlist WHERE UserID = " + request.getParameter("userID") + ";"); 
 			
 			getNumAlerts.next();
 			

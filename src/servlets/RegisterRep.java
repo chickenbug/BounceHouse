@@ -16,12 +16,12 @@ import model.SQLConnector;
 
 import java.time.Year;
 
-@WebServlet(name = "RegisterRep", urlPatterns = {"/CustomerRepRegistration"})
+@WebServlet(name = "RegisterRep", urlPatterns = {"/RegisterRep"})
 public class RegisterRep extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getParameter("username") == null || !request.getParameter("role").equals("admin")) {
+		if (request.getSession().getAttribute("userID") == null || !request.getSession().getAttribute("role").equals("admin")) {
 			response.sendError(403, "You are not authorized to access this page.");
 			return;
 		}
@@ -134,41 +134,6 @@ public class RegisterRep extends HttpServlet {
 					+	"Please click <a href = \"adminFunctions.jsp\">here</a> to try again."
 						+	"</body>"
 						+	"</html>"
-			);
-			return;
-		} else if ((Year.now().getValue() - Integer.parseInt(request.getParameter("yeardropdown")) < 18)) {
-		//	else if ((Year.now().getValue() - request.getParameter("yeardropdown")) < 18) {
-			//user is less than 18 years old - reject
-			writer.println("Account creation failed: you must be at least 18 years of age to create an account.<br>"
-					+	"Please click <a href = \"adminFunctions.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
-			);
-			return;
-		} else if ((request.getParameter("monthdropdown").equals("2") && (Integer.parseInt(request.getParameter("daydropdown")) > 28))) {
-			if (Year.now().isLeap() && Integer.parseInt(request.getParameter("daydropdown")) > 29) {
-				//Specified 30th or 31st of February in a leap year - reject
-				writer.println("Account creation failed: you have specified an invalid date for your birthday.<br>"
-						+	"Please click <a href = \"adminFunctions.jsp\">here</a> to try again."
-						+	"</body>"
-						+	"</html>"
-				);
-				return;
-			} else if (!Year.now().isLeap()) {
-				//specified 29th-31st of February in a non-leap year - reject 
-				writer.println("Account creation failed: you have specified an invalid birthday.<br>"
-						+	"Please click <a href = \"adminFunctions.jsp\">here</a> to try again."
-						+	"</body>"
-						+	"</html>"
-				);
-				return;
-			}
-		} else if ((request.getParameter("monthdropdown").equals("4") || request.getParameter("monthdropdown").equals("6") || request.getParameter("monthdropdown").equals("9") || request.getParameter("monthdropdown").equals("11")) && (Integer.parseInt(request.getParameter("daydropdown")) > 30)) {
-			//specified April, June, September, or November 31
-			writer.println("Account creation failed: you have specified an invalid birthday.<br>"
-					+	"Please click <a href = \"adminFunctions.jsp\">here</a> to try again."
-					+	"</body>"
-					+	"</html>"
 			);
 			return;
 		}

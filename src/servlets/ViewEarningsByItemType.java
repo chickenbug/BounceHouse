@@ -59,7 +59,7 @@ public class ViewEarningsByItemType extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			getEarnings = connection.createStatement();
 
-			earnings = getEarnings.executeQuery("SELECT I.subcategory, A.winbid FROM Item I, Auction A WHERE A.completed=1 AND A.ItemID=I.ItemID");
+			earnings = getEarnings.executeQuery("SELECT I.SubCategory, A.WinBid FROM Item I, Auction A WHERE A.Completed=1 AND A.ItemID=I.ItemID");
 			/*
 			 * Process request and output HTML.
 			 */
@@ -69,10 +69,10 @@ public class ViewEarningsByItemType extends HttpServlet {
 			
 			Map<String,Integer> items = new HashMap<String,Integer>();
 			while(earnings.next()){
-				if(items.containsKey(earnings.getString("I.subcategory"))){
-					items.put(earnings.getString("I.subcategory"),items.get(earnings.getString("I.subcategory"))+earnings.getInt("A.winbid"));
+				if(items.containsKey(earnings.getString("I.SubCategory"))){
+					items.put(earnings.getString("I.SubCategory"),items.get(earnings.getString("I.SubCategory"))+earnings.getInt("A.WinBid"));
 				}
-				else items.put(earnings.getString("I.subcategory"), earnings.getInt("A.winbid"));
+				else items.put(earnings.getString("I.SubCategory"), earnings.getInt("A.WinBid"));
 			}
 			for(Entry<String, Integer> entry: items.entrySet()){
 				writer.println("<tr><td><center>" + entry.getKey() + "</center></td>"

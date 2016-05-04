@@ -13,7 +13,11 @@ public class User {
 			Statement s = con.createStatement();
 			ResultSet rs = s.executeQuery("SELECT Username FROM User WHERE UserID = "+ userID);
 			if(!rs.next()) return null;
-			return rs.getString(1);
+			String user = rs.getString(1);
+			con.close();
+			s.close();
+			rs.close();
+			return user;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
 			System.out.println("error finding username");

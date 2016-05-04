@@ -78,10 +78,10 @@ public class SearchQuestions extends HttpServlet {
 		try {
 			connection = SQLConnector.getConnection();
 			getQuestions = connection.createStatement();
-			query = "SELECT Q.*, U.username, U1.firstname FROM question Q, user U, user U1 WHERE U.userid=Q.userid AND Q.repid=U1.userid";
+			query = "SELECT Q.*, U.Username, U1.FirstName FROM Question Q, User U, User U1 WHERE U.UserID=Q.UserID AND Q.RepID=U1.UserID";
 
 			if(request.getParameter("topic") != null) {
-				if(!request.getParameter("topic").equals("")) query += " AND topic = \"" + request.getParameter("topic") + "\";";
+				if(!request.getParameter("topic").equals("")) query += " AND Topic = \"" + request.getParameter("topic") + "\";";
 			} 
 
 			questions = getQuestions.executeQuery(query);
@@ -89,10 +89,10 @@ public class SearchQuestions extends HttpServlet {
 			while (questions.next()) {
 				count++;
 				writer.println("<tr>"
-						+		"<td><center>" + questions.getString("Q.topic") + "</center></td>"
-						+		"<td><center>" + questions.getString("Q.qtext") + "</center></td>"
-						+		"<td><center>" + questions.getString("U.username") + "</center></td>"
-						+		"<td><center>"+ questions.getString("U1.firstname") + "</center></td>"
+						+		"<td><center>" + questions.getString("Q.Topic") + "</center></td>"
+						+		"<td><center>" + questions.getString("Q.QText") + "</center></td>"
+						+		"<td><center>" + questions.getString("U.Username") + "</center></td>"
+						+		"<td><center>"+ questions.getString("U1.FirstName") + "</center></td>"
 						);
 				if(request.getSession().getAttribute("role").equals("rep")){
 					if(questions.getString("answer")!=null){
@@ -124,6 +124,7 @@ public class SearchQuestions extends HttpServlet {
 
 		} catch (SQLException s) {
 			writer.println("Search failed: " + s.getMessage() + "<br>");
+			s.printStackTrace();
 			return;
 		} catch (Exception e) {
 			writer.println("Search failed: " + e.getMessage() + "<br>");

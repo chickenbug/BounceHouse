@@ -65,11 +65,14 @@ public class GetContent extends HttpServlet {
 						+			"<a href = \"create_auction\">Create An Auction</a> | "
 						+			"<a href = \"createAlert.jsp\">Create Alert</a> | "
 						+ 			"<a href = \"search.jsp\">Search</a> | "
-						+			"<a href = \"ViewQuestions\">Ask A Question/Contact Us</a> | "
+						+			"<a href = \"ViewQuestions\">Ask/View Questions</a> | "
 						+			"<a href = \"ViewAccount?userID=" + request.getSession().getAttribute("userID") + "\">View Account</a> | "
 						+			"<a href = \"ViewAlerts?userID=" + request.getSession().getAttribute("userID") + "\">Manage Alerts</a> | "
 						+			"<a href = \"RecievedAlerts?userID=" + request.getSession().getAttribute("userID") + "\">View Recieved Alerts</a> | "
 						+			"<a href = \"Logout\">Logout</a>"
+						+ 			"<hr>"
+						+			"<a href = \"ViewAuctionsByBuyer\">View Auctions By Buyer</a> | "
+						+			"<a href = \"ViewAuctionsBySeller\">View Auctions By Seller</a>"
 		);
 		
 		if (request.getSession().getAttribute("role").toString().equals("admin")) {
@@ -91,8 +94,6 @@ public class GetContent extends HttpServlet {
 						+				"<option value = \"bouncinessDESC\">Bounciness High to Low</option>"
 						+				"<option value = \"categoryASC\">Category A to Z</option>"
 						+				"<option value = \"categoryDESC\">Category Z to A</option>"
-						+				"<option value = \"colorASC\">Color A to Z</option>"
-						+				"<option value = \"colorDESC\">Color Z to A</option>"
 						+				"<option value = \"sizeDESC\">Size S to L</option>"
 						+				"<option value = \"sizeASC\">Size L to S</option>"
 						+				"<option value = \"subcategoryASC\">Subcategory A to Z</option>"
@@ -105,17 +106,21 @@ public class GetContent extends HttpServlet {
 						+			"<th>Subcategory</th>"
 						+			"<th>Description</th>"
 						+			"<th>Bounciness</th>"
-						+			"<th>Color</th>"
 						+			"<th>Size</th>"
 						+			"<th>See The Auction For This Item</th>"
+						+			"<th>Current Max Bid</th>"
+						+			"<th>See The Bid History For This Item</th>"
+						+			"<th>View Auctions For Similar Items</th>"
 		);	
 		
 		//Create objects for connections, statements, and resultsets.
 		Connection connection = null;
 		Statement getItems = null;
 		Statement getAuction = null;
+		Statement getBid = null;
 		ResultSet items = null;
 		ResultSet auction = null;
+		ResultSet bid = null;
 		boolean error = false;
 		
 		//Open connection, create statement, and process request.
@@ -123,6 +128,7 @@ public class GetContent extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			getItems = connection.createStatement();
 			getAuction = connection.createStatement();
+			getBid = connection.createStatement();
 			String query = "SELECT * FROM Item ";
 			
 			//Implement sorting:
@@ -138,10 +144,6 @@ public class GetContent extends HttpServlet {
 				query += "ORDER BY Category ASC;";
 			} else if (request.getParameter("sortBy").equals("categoryDESC")) { //Category Z to A
 				query += "ORDER BY Category DESC;";
-			} else if (request.getParameter("sortBy").equals("colorASC")) { //Color A to Z
-				query += "ORDER BY Color ASC;";
-			} else if (request.getParameter("sortBy").equals("colorDESC")) { // Color Z to A
-				query += "ORDER BY Color DESC;";
 			} else if (request.getParameter("sortBy").equals("sizeASC")) { //Size XS to XL
 				query += "ORDER BY Size ASC;";
 			} else if (request.getParameter("sortBy").equals("sizeDESC")) { //Size XL to XS
@@ -165,16 +167,24 @@ public class GetContent extends HttpServlet {
 				
 				if (auction.next()) {
 					if (auction.getInt("Completed") == 0) {
-						writer.println("<tr>"
-									+		"<td><center>" + items.getString("Category") + "</center></td>"
-									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
-									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
-									+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
-									+		"<td><center>" + items.getString("Color") + "</center></td>"
-									+		"<td><center>" + items.getString("Size") + "</center></td>"
-									+		"<td><center><a href = \"auction?auctionID=" + auction.getInt("AuctionID") + "\">View Auction For This Item</a></center></td>"
-									+ 	"</tr>" 
-						);
+						bid = getBid.executeQuery("SELECT MAX(Amount) AS MaxBid FROM Bid WHERE AuctionID = " + auction.getInt("AuctionID") + ";");
+						
+						if(bid.next()) {
+							writer.println("<tr>"
+										+		"<td><center>" + items.getString("Category") + "</center></td>"
+										+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
+										+ 		"<td><center>" + items.getString("Description") + "</center></td>"
+										+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
+										+		"<td><center>" + items.getString("Size") + "</center></td>"
+										+		"<td><center><a href = \"auction?" + auction.getInt("AuctionID") + "\">View Auction</a></center></td>"
+										+		"<td><center>" +  bid.getInt("MaxBid") + "</center></td>"
+										+		"<td><center><a href = \"ViewBidHistory?auctionID=" + auction.getInt("AuctionID") + "\">View Bid History</a></center></td>"
+										+		"<td><center><a href = \"ViewSimilarAuctions?auctionId=" + auction.getInt("AuctionID") + "&category="
+										+ 			items.getString("Category") + "&subcategory=" + items.getString("Subcategory") + "\">View Similar Auctions</a></center>"
+										+			"</td>"
+										+	 "</tr>" 
+							);
+						}
 					}
 				}
 			}
@@ -208,6 +218,12 @@ public class GetContent extends HttpServlet {
 				}
 				if (connection != null) {
 					connection.close();
+				}
+				if (bid != null) {
+					bid.close();
+				}
+				if (getBid != null) {
+					getBid.close();
 				}
 			} catch (SQLException sql) {
 				/*

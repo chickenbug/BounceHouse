@@ -64,7 +64,7 @@ public class ViewBestBuyers extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			getEarnings = connection.createStatement();
 
-			earnings = getEarnings.executeQuery("SELECT U.username FROM User U, Auction A WHERE A.completed=1 AND U.userid=A.winnerid");
+			earnings = getEarnings.executeQuery("SELECT U.Username FROM User U, Auction A WHERE A.Completed=1 AND U.UserID=A.WinnerID");
 			/*
 			 * Process request and output HTML.
 			 */
@@ -75,11 +75,11 @@ public class ViewBestBuyers extends HttpServlet {
 			Map<String,Integer> count = new HashMap<String,Integer>();
 			Map<String,Integer> sortedCount = new HashMap<String,Integer>();
 			while(earnings.next()){
-				if(!count.containsKey(earnings.getString("U.username"))){
-					count.put(earnings.getString("U.username"), 1);
+				if(!count.containsKey(earnings.getString("U.Username"))){
+					count.put(earnings.getString("U.Username"), 1);
 				}
 				else{
-					count.put(earnings.getString("U.username"), count.get(earnings.getString("U.username"))+1);
+					count.put(earnings.getString("U.Username"), count.get(earnings.getString("U.Username"))+1);
 				}
 			}
 			sortedCount = sortByValue(count);

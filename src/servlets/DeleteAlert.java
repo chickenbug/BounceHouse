@@ -50,11 +50,11 @@ public class DeleteAlert extends HttpServlet {
 			deleteAlert = connection.createStatement();
 			getAlerts = connection.createStatement();
 			
-			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE ListID = " + request.getParameter("listID") + ";");
+			getNumAlerts = getAlerts.executeQuery("SELECT COUNT(*) AS Count FROM Wishlist WHERE ListID = " + request.getParameter("listID") + ";");
 			
 			getNumAlerts.next();
 			
-			affectedRows = deleteAlert.executeUpdate("DELETE FROM WishList WHERE ListID = " + request.getParameter("listID") + ";"); 
+			affectedRows = deleteAlert.executeUpdate("DELETE FROM Wishlist WHERE ListID = " + request.getParameter("listID") + ";"); 
 					
 			if (affectedRows != getNumAlerts.getInt("Count")) {
 				throw new SQLException("An error occurred while deleting the alert, but the deletion may still have been successful.");

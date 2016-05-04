@@ -69,42 +69,41 @@ public class ModifyAccount extends HttpServlet {
 			statement = connection.createStatement();
 			String query = "UPDATE User SET ";
 			if (!isEmpty(request.getParameter("address"))) {
-				query.concat("Address = \"" + request.getParameter("address") + "\",");
+				query += "Address = \"" + request.getParameter("address") + "\",";
 			} 
-//ADD IN BIRTHDAY SHIT HERE
 			if (!isEmpty(request.getParameter("city"))) {
-				query.concat("City = \"" + request.getParameter("city") + "\",");
+				query += "City = \"" + request.getParameter("city") + "\",";
 			}
 			if (!isEmpty(request.getParameter("country"))) {
-				query.concat("Country = \"" + request.getParameter("country") + "\",");
+				query+="Country = \"" + request.getParameter("country") + "\",";
 			}
 			if (!isEmpty(request.getParameter("email"))) {
-				query.concat("Email = \"" + request.getParameter("email") + "\",");
+				query+="Email = \"" + request.getParameter("email") + "\",";
 			}
 			if (!isEmpty(request.getParameter("firstname"))) {
-				query.concat("FirstName = \"" + request.getParameter("firstname") + "\",");
+				query+="FirstName = \"" + request.getParameter("firstname") + "\",";
 			}
 			if (!isEmpty(request.getParameter("lastname"))) {
-				query.concat("LastName = \"" + request.getParameter("lastname") + "\",");
+				query+="LastName = \"" + request.getParameter("lastname") + "\",";
 			}
 			if (!isEmpty(request.getParameter("password"))) {
-				query.concat("Password = \"" + request.getParameter("password") + "\",");
+				query+="Password = \"" + request.getParameter("password") + "\",";
 			}
 			if (!isEmpty(request.getParameter("phone"))) {
-				query.concat("Phone = \"" + request.getParameter("phone") + "\",");
+				query+="Phone = \"" + request.getParameter("phone") + "\",";
 			}
 			if (!isEmpty(request.getParameter("postcode"))) {
-				query.concat("Postcode = \"" + request.getParameter("postcode") + "\",");
+				query+="PostCode = \"" + request.getParameter("postcode") + "\",";
 			}
 			if (!isEmpty(request.getParameter("state"))) {
-				query.concat("State = \"" + request.getParameter("state") + "\",");
+				query+="State = \"" + request.getParameter("state") + "\",";
 			}
 			if (!isEmpty(request.getParameter("username"))) {
-				query.concat("Username = \"" + request.getParameter("Username") + "\",");
+				query+="Username = \"" + request.getParameter("Username") + "\",";
 			}
 			
 			query = query.substring(0,query.lastIndexOf(","));
-			query.concat(" WHERE Username = ");
+			query+=" WHERE Username = ";
 			
 			affectedRows = statement.executeUpdate(query);
 	

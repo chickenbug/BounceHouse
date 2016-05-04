@@ -23,11 +23,15 @@ public class Bid {
 			Connection con = SQLConnector.getConnection();
 			Statement s = con.createStatement();
 			ResultSet rs = s.executeQuery(
-					"SELECT U.Username FROM User U, Bid B WHERE B.auctionID = " + auctionID 
-					+ " AND B.Amount = (SELECT MAX(AMOUNT) FROM Bid WHERE auctionID = " + auctionID 
+					"SELECT U.Username FROM User U, Bid B WHERE B.AuctionID = " + auctionID 
+					+ " AND B.Amount = (SELECT MAX(Amount) FROM Bid WHERE AuctionID = " + auctionID 
 					+ ") AND B.UserID = U.UserID");
 			if(!rs.next()) return null;
-			return rs.getString(1);
+			String maxUname= rs.getString(1);
+			con.close(); 
+			s.close();
+			rs.close();
+			return maxUname;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
 			System.out.println("error finding username");
@@ -59,6 +63,11 @@ public class Bid {
 			s.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			s.executeUpdate();
 			Auction.updateTop(auctionID, amount, userID);
+			c.close();
+			s.close();
+			
+			AutoBid.sendAlerts(amount,auctionID,userID);
+			
 			return true;
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

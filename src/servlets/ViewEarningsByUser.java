@@ -59,8 +59,8 @@ public class ViewEarningsByUser extends HttpServlet {
 			connection = SQLConnector.getConnection();
 			getEarnings = connection.createStatement();
 
-			earnings = getEarnings.executeQuery("SELECT U.username, A.winbid FROM Item I, Auction A, User U WHERE A.completed=1 AND "
-					+ "A.ItemID=I.ItemID AND A.UserID=U.UserID AND U.role=\"EndUser\""); 
+			earnings = getEarnings.executeQuery("SELECT U.Username, A.WinBid FROM Item I, Auction A, User U WHERE A.Completed=1 AND "
+					+ "A.ItemID=I.ItemID AND A.UserID=U.UserID AND U.Role=\"EndUser\""); 
 			/*
 			 * Process request and output HTML.
 			 */
@@ -70,10 +70,10 @@ public class ViewEarningsByUser extends HttpServlet {
 			
 			Map<String,Integer> users = new HashMap<String,Integer>();
 			while(earnings.next()){
-				if(users.containsKey(earnings.getString("U.username"))){
-					users.put(earnings.getString("U.username"),users.get(earnings.getString("U.username"))+earnings.getInt("A.winbid"));
+				if(users.containsKey(earnings.getString("U.Username"))){
+					users.put(earnings.getString("U.Username"),users.get(earnings.getString("U.Username"))+earnings.getInt("A.WinBid"));
 				}
-				else users.put(earnings.getString("U.username"), earnings.getInt("A.winbid"));
+				else users.put(earnings.getString("U.Username"), earnings.getInt("A.WinBid"));
 			}
 			for(Entry<String, Integer> entry: users.entrySet()){
 				writer.println("<tr><td><center>" + entry.getKey() + "</center></td>"

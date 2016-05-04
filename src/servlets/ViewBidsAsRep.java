@@ -78,13 +78,13 @@ public class ViewBidsAsRep extends HttpServlet {
 					+		"<td><center> Options </center></td>"
 					);
 			while (bids.next()) {
-				int bidID = Integer.parseInt(bids.getString("bidid"));
+				int bidID = Integer.parseInt(bids.getString("BidID"));
 				writer.println("<tr>"
-						+		"<td><center>" + bids.getString("bidid") + "</center></td>"
-						+		"<td><center>" + bids.getString("auctionid") + "</center></td>"
-						+		"<td><center>"+ bids.getString("userid") + "</center></td>"
-						+ 		"<td><center>" + bids.getString("amount") + "</center></td>"
-						+ 		"<td><center>" + bids.getString("bidtime") + "</center></td>"
+						+		"<td><center>" + bids.getString("BidID") + "</center></td>"
+						+		"<td><center>" + bids.getString("AuctionID") + "</center></td>"
+						+		"<td><center>"+ bids.getString("UserID") + "</center></td>"
+						+ 		"<td><center>" + bids.getString("Amount") + "</center></td>"
+						+ 		"<td><center>" + bids.getString("BidTime") + "</center></td>"
 						+		"<td><form action=\"ViewBidsAsRep\" method=\"post\" onsubmit=\"return confirm('Confirm Removal?');\">"
 						+		"<center> <INPUT TYPE=\"submit\" VALUE=\"Remove\">"
 						+		"<input type = \"hidden\" name = \"bidID\" value = "+bidID+">"

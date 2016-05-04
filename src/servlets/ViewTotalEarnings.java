@@ -66,10 +66,10 @@ public class ViewTotalEarnings extends HttpServlet {
 
 			Map<String,Integer> users = new HashMap<String,Integer>();
 			while(auctions.next()){
-				if(users.containsKey(auctions.getString("U.username"))){
-					users.put(auctions.getString("U.username"),users.get(auctions.getString("U.username"))+auctions.getInt("A.WinBid"));
+				if(users.containsKey(auctions.getString("U.Username"))){
+					users.put(auctions.getString("U.Username"),users.get(auctions.getString("U.Username"))+auctions.getInt("A.WinBid"));
 				}
-				else users.put(auctions.getString("U.username"), auctions.getInt("A.WinBid"));
+				else users.put(auctions.getString("U.Username"), auctions.getInt("A.WinBid"));
 			}
 			int total = 0;
 			for(Entry<String, Integer> entry: users.entrySet()){

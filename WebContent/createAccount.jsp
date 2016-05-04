@@ -21,7 +21,7 @@
 				for (var m = 0; m<12; m++)
 					month.options[m] = new Option(monthtext[m], m+1)
 			
-				month.options[today.getMonth()] = new Option(monthtext[today.getMonth()], monthtext[today.getMonth()], true, true)
+				month.options[today.getMonth()] = new Option(monthtext[today.getMonth()], today.getMonth(), true, true)
 			
 				var thisyear = today.getFullYear()
 			

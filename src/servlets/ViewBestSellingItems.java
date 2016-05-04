@@ -63,7 +63,7 @@ public class ViewBestSellingItems extends HttpServlet{
 			connection = SQLConnector.getConnection();
 			getEarnings = connection.createStatement();
 
-			earnings = getEarnings.executeQuery("SELECT I.category, A.winbid FROM Item I, Auction A WHERE A.completed=1 AND A.ItemID=I.ItemID");
+			earnings = getEarnings.executeQuery("SELECT I.Category, A.WinBid FROM Item I, Auction A WHERE A.Completed=1 AND A.ItemID=I.ItemID");
 			/*
 			 * Process request and output HTML.
 			 */
@@ -76,16 +76,16 @@ public class ViewBestSellingItems extends HttpServlet{
 			Map<String,Integer> items = new HashMap<String,Integer>();
 			Map<String,Integer> count = new HashMap<String,Integer>();
 			while(earnings.next()){
-				if(!count.containsKey(earnings.getString("I.category"))){
-					count.put(earnings.getString("I.category"), 1);
+				if(!count.containsKey(earnings.getString("I.Category"))){
+					count.put(earnings.getString("I.Category"), 1);
 				}
 				else{
-					count.put(earnings.getString("I.category"), count.get(earnings.getString("I.category"))+1);
+					count.put(earnings.getString("I.Category"), count.get(earnings.getString("I.Category"))+1);
 				}
-				if(items.containsKey(earnings.getString("I.category"))){
-					items.put(earnings.getString("I.category"),items.get(earnings.getString("I.category"))+earnings.getInt("A.winbid"));
+				if(items.containsKey(earnings.getString("I.Category"))){
+					items.put(earnings.getString("I.Category"),items.get(earnings.getString("I.Category"))+earnings.getInt("A.WinBid"));
 				}
-				else items.put(earnings.getString("I.category"), earnings.getInt("A.winbid"));
+				else items.put(earnings.getString("I.Category"), earnings.getInt("A.WinBid"));
 			}
 			Map<String,Integer> sortedCount = sortByValue(count);
 			for(Entry<String, Integer> entry: sortedCount.entrySet()){
