@@ -3,7 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.servlet.ServletException;
@@ -37,7 +37,6 @@ public class DeleteAccount extends HttpServlet {
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
 									"<h3>Account Deletion</h3>"+
-								"</center><br><br>" +
 								"<hr>"
 		);	
 		
@@ -47,8 +46,7 @@ public class DeleteAccount extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 			affectedRows = statement.executeUpdate("DELETE FROM User WHERE UserID = " + Integer.parseInt(request.getSession().getAttribute("userID").toString()) + ";");
 			
@@ -79,8 +77,12 @@ public class DeleteAccount extends HttpServlet {
 			
 			if (error) {
 				writer.println("Please click <a href = \"Modify Account?userID=" + request.getSession().getAttribute("userID") + "\">here</a> to try again."
-						+ 		"</body>"
-						+ 	"</html>"
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			} else {
 				response.sendRedirect("Logout");

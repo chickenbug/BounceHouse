@@ -7,7 +7,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -65,18 +65,18 @@ public class GetContent extends HttpServlet {
 						+			"<a href = \"create_auction\">Create An Auction</a> | "
 						+			"<a href = \"createAlert.jsp\">Create Alert</a> | "
 						+ 			"<a href = \"search.jsp\">Search</a> | "
-						+			"<a href = \"ViewQuestions\">Ask/View Questions</a> | "
+						+			"<a href = \"ViewQuestions\">Ask A Question/Contact Us</a> | "
 						+			"<a href = \"ViewAccount?userID=" + request.getSession().getAttribute("userID") + "\">View Account</a> | "
 						+			"<a href = \"ViewAlerts?userID=" + request.getSession().getAttribute("userID") + "\">Manage Alerts</a> | "
 						+			"<a href = \"RecievedAlerts?userID=" + request.getSession().getAttribute("userID") + "\">View Recieved Alerts</a> | "
 						+			"<a href = \"Logout\">Logout</a>"
 		);
 		
-		if (request.getSession().getAttribute("role").toString().equals("admin")) {
+		if (request.getSession().getAttribute("role").toString().equals("Admin")) {
 			writer.println("<hr>"
 					+ 		"<a href = \"adminFunctions.jsp\">Administrator Functions</a>"
 			);
-		} else if (request.getSession().getAttribute("role").toString().equals("rep")) {
+		} else if (request.getSession().getAttribute("role").toString().equals("Rep")) {
 			writer.println("<hr>"
 					+		"<a href = \"repFunctions.jsp\">Customer Representative Functions</a>"
 			);
@@ -93,8 +93,8 @@ public class GetContent extends HttpServlet {
 						+				"<option value = \"categoryDESC\">Category Z to A</option>"
 						+				"<option value = \"colorASC\">Color A to Z</option>"
 						+				"<option value = \"colorDESC\">Color Z to A</option>"
-						+				"<option value = \"sizeASC\">Size XS to XL</option>"
-						+				"<option value = \"sizeDESC\">Size XL to XS</option>"
+						+				"<option value = \"sizeDESC\">Size S to L</option>"
+						+				"<option value = \"sizeASC\">Size L to S</option>"
 						+				"<option value = \"subcategoryASC\">Subcategory A to Z</option>"
 						+				"<option value = \"subcategoryDESC\">Subcategory Z to A</option>"
 						+			"</select>"
@@ -120,12 +120,7 @@ public class GetContent extends HttpServlet {
 		
 		//Open connection, create statement, and process request.
 		try {
-			//Opens the driver or something lol
-			Class.forName("com.mysql.jdbc.Driver");
-			
-			//username and password below are placeholders - replace them 
-			//Set up connection to local MySQL server using proper credentials. Create a new query.
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			getItems = connection.createStatement();
 			getAuction = connection.createStatement();
 			String query = "SELECT * FROM Item ";

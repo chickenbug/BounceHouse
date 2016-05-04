@@ -64,9 +64,8 @@
 			<br>
 			<select name = "size" id = "size">
 				<option value = 'S'>Small</option>
-				<%-- <option value = 'M'>Medium</option> --%>
+				<<option value = 'M'>Medium</option>
 				<option value = 'L'>Large</option>
-				<option value = 'XL'>Extra Large</option>
 			</select>
 			<br>
 			<br>
@@ -83,4 +82,6 @@
 			<input type = "submit" value = "Submit">
 		</form>
 	</body>
+	<br>
+	<a href = "GetContent">Home</a>
 </html>

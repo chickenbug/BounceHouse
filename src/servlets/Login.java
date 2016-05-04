@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.SQLConnector;
 import java.sql.*;
 
 @WebServlet(name = "Login", urlPatterns = {"/Login"})
@@ -26,8 +27,7 @@ public class Login extends HttpServlet {
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
 									"<h3>Login</h3>"+
-								"</center><br><br>" +
-								"<hr>"
+									"<hr>"
 		);	
 		
 		Connection connection = null;
@@ -52,8 +52,7 @@ public class Login extends HttpServlet {
 		
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 
 			//If username and password are properly set (that is, not null) go ahead and query the DB.
@@ -109,8 +108,12 @@ public class Login extends HttpServlet {
 			
 			if (error) {
 				writer.println("Please click <a href = \"index.jsp\">here</a> to try again."
-						+ 		"</body>"
-						+ 	"</html>"
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			} else {
 				response.sendRedirect("GetContent");
