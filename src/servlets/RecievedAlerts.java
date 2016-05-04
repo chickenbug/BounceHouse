@@ -3,7 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,6 +23,7 @@ public class RecievedAlerts extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		//PrintWriter to write to HTML.
@@ -45,41 +46,63 @@ public class RecievedAlerts extends HttpServlet {
 						+			"<h1>Bouncehouse Emporium</h1>" 
 						+			"<h3>View Recieved Alerts</h3>"
 						+			"<hr>"
-						+			"<table border = 1 width = 60%>"
+
 		);
 		
 		//Create objects for connections, statements, and resultsets.
 		Connection connection = null;
 		Statement getAlerts = null;
-		Statement getAuctions = null;
+		Statement getItem = null;
+		Statement getAuction = null;
 		ResultSet alerts = null;
-		ResultSet auctions = null;
+		ResultSet item = null;
+		ResultSet auction = null;
 		boolean error = false;
+		int count = 0;
 				
 		//Open connection, create statement, and process request.
 		try {
-			//Opens the driver or something lol
-			Class.forName("com.mysql.jdbc.Driver");
-					
-			//username and password below are placeholders - replace them 
-			//Set up connection to local MySQL server using proper credentials. Create a new query.
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			getAlerts = connection.createStatement();
-			getAuctions = connection.createStatement();
+			getItem = connection.createStatement();
+			getAuction = connection.createStatement();
 					
-			alerts = getAlerts.executeQuery("SELECT AuctionID FROM Alert WHERE UserID = \"" + request.getParameter("userID") + "\" AND Completed = 0;");
+			alerts = getAlerts.executeQuery("SELECT ItemID FROM Alert WHERE UserID = \"" + request.getParameter("userID") + "\";");
 					
 					while (alerts.next()) {
-						auctions = getAuctions.executeQuery("SELECT CloseDate FROM Auction WHERE AuctionID = " + alerts.getInt("AuctionID") + ";");
 						
-						while (auctions.next()) {
-							writer.println("<tr>"
-									+		"<td><center>" + alerts.getString("AuctionID") + "</center></td>"
-									+ 		"<td><center>Closes on " + auctions.getString("CloseDate") + "</center></td>"
-/*------------->*/					+		"<td><center><a href = \"?auctionID" + alerts.getInt("AuctionID") + "\">View This Auction</a></center></td>" //Add Auction Page Here - Haikinh
-									+ 	"</tr>" 
-							);
+						if (count == 0) {
+							writer.println(
+										"<table border = 1 width = 60%>"
+									+		"<th>Auction #</th>"
+									+		"<th>Category</th>"
+									+		"<th>Subcategory</th>"
+									+		"<th>Bounciness</th>"
+									+		"<th>Size</th>"
+									+		"<th>Color</th>"
+									+		"<th>View Auction For This Item</th>");
 						}
+						
+						item = getItem.executeQuery("SELECT Bounciness,Category,Color,Size,Subcategory FROM Item WHERE ItemID = " + alerts.getInt("ItemID") + ";");
+						
+						if (item.next()) {
+							auction = getAuction.executeQuery("SELECT AuctionID FROM Auction WHERE ItemID = " + item.getInt("itemID") + ";");
+							
+							if (auction.next()) {
+								writer.println("<tr>"
+										+		"<td><center>" + auction.getInt("AuctionID") + "</center></td>"
+										+ 		"<td><center>" + item.getString("Category") + "</center></td>"
+										+ 		"<td><center>" + item.getString("Subcategory") + "</center></td>"
+										+ 		"<td><center>" + item.getInt("Bounciness") + "</center></td>"
+										+ 		"<td><center>" + item.getString("Size") + "</center></td>"
+										+ 		"<td><center>" + item.getString("Color") + "</center></td>"
+										+		"<td><center><a href = \"auction?auctionID=" + alerts.getInt("AuctionID") + "\">View This Auction</a></center></td>"
+										+ 	"</tr>" 
+								);
+							}
+						}
+						
+						count++;
 					}
 					
 					writer.println("</table>"
@@ -97,11 +120,17 @@ public class RecievedAlerts extends HttpServlet {
 				} finally {
 					//Close resultset, statement, connection.
 					try {
-						if (auctions != null) {
-							auctions.close();
+						if (auction != null) {
+							auction.close();
 						}
-						if (getAuctions != null) {
-							getAuctions.close();
+						if (getAuction != null) {
+							getAuction.close();
+						}
+						if (item != null) {
+							item.close();
+						}
+						if (getItem != null) {
+							getItem.close();
 						}
 						if (alerts != null) {
 							alerts.close();
@@ -127,7 +156,7 @@ public class RecievedAlerts extends HttpServlet {
 					//Write closing html for page.
 					writer.println("<br>"
 								+ 	"<br>"
-								+	"<a href = \"GetContent\">Return To Main Page</a>"
+								+	"<a href = \"GetContent\">Home</a>"
 								+	"</center>"
 								+	"</body"
 								+	"</html>"

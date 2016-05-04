@@ -3,7 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -20,6 +20,7 @@ public class CreateAlert extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -34,8 +35,7 @@ public class CreateAlert extends HttpServlet {
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
 									"<h3>Create Alert</h3>"+
-								"</center><br><br>" +
-								"<hr>"
+								"<hr>" 
 		);	
 		
 		Connection connection = null;
@@ -47,15 +47,18 @@ public class CreateAlert extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			selectItem = connection.createStatement();
 			insertAlert = connection.createStatement();
 			
 			//Error checking code - check if an entry already exists in the wishlist table for this user and item.
 			hasAlertForThisItem = selectItem.executeQuery("SELECT COUNT(*) AS Count FROM WishList WHERE UserID = "
 								+	Integer.parseInt(request.getSession().getAttribute("userID").toString()) 
-								+	" AND ItemID = " + request.getParameter("itemID")
+								+	" AND Bounciness = \"" + request.getParameter("bounciness") + "\""
+								+	" AND Category = \"" + request.getParameter("category") + "\""
+								+	" AND Color = \"" + request.getParameter("color") + "\""
+								+	" AND Size = \"" + request.getParameter("size") + "\""
+								+	" AND SubCategory = \"" + request.getParameter("subcategory") + "\""
 								+	";"
 			);
 			
@@ -66,22 +69,18 @@ public class CreateAlert extends HttpServlet {
 				}
 			}
 			
-			item = selectItem.executeQuery("SELECT Bounciness, Category, Color, Size, Subcategory FROM Item WHERE ItemID = " + request.getParameter("itemID") + ";");
-			while (item.next()) {
-				affectedRows = insertAlert.executeUpdate("INSERT INTO Wishlist(Bounciness, Category, Color, ItemID, Size, Subcategory, UserID)" 
+			affectedRows = insertAlert.executeUpdate("INSERT INTO Wishlist(Bounciness, Category, Color, Size, Subcategory, UserID)" 
 							+   " VALUES(" 
-							+	item.getInt("Bounciness") + ","
-							+	"\"" +	item.getString("Category")											+ "\","
-							+	"\"" +	item.getString("Color") 											+ "\","
-							+	request.getParameter("itemID")												+ ","
-							+	"\"" +	item.getString("Size") 												+ "\","
-							+	"\"" +	item.getString("Subcategory")										+ "\","
+							+	request.getParameter("bounciness") + ","
+							+	"\"" +	request.getParameter("category")									+ "\","
+							+	"\"" +	request.getParameter("color") 										+ "\","
+							+	"\"" +	request.getParameter("size") 										+ "\","
+							+	"\"" +	request.getParameter("subcategory")									+ "\","
 							+ 	Integer.parseInt(request.getSession().getAttribute("userID").toString())	+ ");"
-				);
+			);
 				
-				if (affectedRows != 1) {
-					throw new SQLException("Alert was not inserted or insertion was accidentally repated.<br>");
-				}
+			if (affectedRows != 1) {
+				throw new SQLException("Alert was not inserted or insertion was accidentally repeated.<br>");
 			}
 		} catch (SQLException s) {
 			error = true;
@@ -93,6 +92,9 @@ public class CreateAlert extends HttpServlet {
 			try {
 				if (item != null) {
 					item.close();
+				}
+				if (hasAlertForThisItem != null) {
+					hasAlertForThisItem.close();
 				}
 				if (selectItem != null) {
 					selectItem.close();
@@ -112,18 +114,25 @@ public class CreateAlert extends HttpServlet {
 			}
 			
 			if (error) {
-				writer.println("Please click <a href = \"GetContent\">here</a> to try again."
-						+ 		"</body>"
-						+ 	"</html>"
+				writer.println("Please click <a href = \"createAlert.jsp\">here</a> to try again."
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			} else {
 				writer.println("Alert creation successful.<br> You can click <a href = \"GetContent\">here</a> to go back to the main page."
-						+ 		"</body>"
-						+ 	"</html>"
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			}
 		}
-		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

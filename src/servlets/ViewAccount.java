@@ -3,11 +3,10 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,6 +20,7 @@ public class ViewAccount extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getSession().getAttribute("userID") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -35,7 +35,6 @@ public class ViewAccount extends HttpServlet {
 								"<center>" +
 									"<h1>Bouncehouse Emporium</h1>" +
 									"<h3>View Account</h3>"+
-								"</center><br><br>" +
 								"<hr>" +
 								"<form action = \"UpdateUser\" method = \"post\">"
 		);	
@@ -46,8 +45,7 @@ public class ViewAccount extends HttpServlet {
 		boolean error = false;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 
 			//If username and password are properly set (that is, not null) go ahead and query the DB.
@@ -130,14 +128,18 @@ public class ViewAccount extends HttpServlet {
 			
 			if (error) {
 				writer.println("Please click <a href = \"GetContent.jsp\">here</a> to return to the main page and try again."
-						+ 		"</body>"
-						+ 	"</html>"
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			} else {
 				writer.println("<br>"
 						+ "<br>"
 						+ "<center>"
-						+ "<a href = \"GetContent\">Return To Main Page</a>"
+						+ "<a href = \"GetContent\">Home</a>"
 						+ "</center"
 						+ "</body>"
 						+ "</html>"

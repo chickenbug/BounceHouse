@@ -3,7 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -21,6 +21,7 @@ public class Registration extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("username") == null) {
 			response.sendError(403, "You are not authorized to access this page.");
+			return;
 		}
 		
 		PrintWriter writer  = response.getWriter();
@@ -171,9 +172,7 @@ public class Registration extends HttpServlet {
 		}
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			//username and password below are placeholders - replace them 
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			statement = connection.createStatement();
 			usernameExists = statement.executeQuery("SELECT COUNT(*) AS Count FROM User WHERE Username = \"" + request.getParameter("username") + "\";");
 			
@@ -231,11 +230,16 @@ public class Registration extends HttpServlet {
 			
 			if (error) {
 				writer.println("Please click <a href = \"createAccount.jsp\">here</a> to try again."
-						+ 		"</body>"
-						+ 	"</html>"
+						+ 	"<br>"
+						+ 	"<br>"
+						+	"<a href = \"GetContent\">Home</a>"
+						+	"</center>"
+						+	"</body"
+						+	"</html>"
 				);
 			} else {
 				response.sendRedirect("index.jsp");
+				return;
 			}
 		}
 	}

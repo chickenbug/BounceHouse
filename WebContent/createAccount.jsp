@@ -118,5 +118,7 @@
 			<br>
 			<input type = "submit" value = "Create Account">
 		</form>
+		<br>
+		<a href = "index.jsp">Back to Login</a>
 	</body>
 </html>

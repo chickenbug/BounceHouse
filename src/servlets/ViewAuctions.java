@@ -3,11 +3,10 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import model.SQLConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -59,12 +58,7 @@ public class ViewAuctions extends HttpServlet {
 				
 		//Open connection, create statement, and process request.
 		try {
-			//Opens the driver or something lol
-			Class.forName("com.mysql.jdbc.Driver");
-					
-			//username and password below are placeholders - replace them 
-			//Set up connection to local MySQL server using proper credentials. Create a new query.
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proj2016", "root", "pw");
+			connection = SQLConnector.getConnection();
 			getAuctions = connection.createStatement();
 			getItems = connection.createStatement();
 					
@@ -82,9 +76,15 @@ public class ViewAuctions extends HttpServlet {
 									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
 									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 									+ 		"<td><center>Closes on " + auctions.getString("CloseDate") + "</center></td>"
-/*------------->*/					+		"<td><center><a href = \"?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a></center></td>" //Add Auction Page Here - Haikinh
+									+		"<td><center><a href = \"auction?auctionID" + auctions.getInt("AuctionID") + "\">View This Auction</a>"
 									+ 	"</tr>" 
 							);
+
+							if (request.getSession().getAttribute("role").equals("rep")){
+								writer.println("<form action=\"ViewAuctions\" method=\"post\" onsubmit=\"return confirm('Confirm Removal?');\">"
+										+ "<INPUT TYPE=\"submit\" VALUE=\"Remove\"><input type = \"hidden\" name = \"aucID\" value = "+auctionID+"></form>");
+							}
+							writer.println("</center></td>");
 						}
 					}
 					
@@ -132,8 +132,12 @@ public class ViewAuctions extends HttpServlet {
 					
 					//Write closing html for page.
 					writer.println(
-											"</center>"
-								+		"</body"
+								"</center>"
+								+ 	"<br>"
+								+ 	"<br>"
+								+	"<a href = \"GetContent\">Home</a>"
+								+	"</center>"
+								+	"</body"
 								+	"</html>"
 					);
 				}
