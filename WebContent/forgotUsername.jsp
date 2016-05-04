@@ -13,5 +13,7 @@
 		<input type = text name = email></input>
 		<input type = Submit value = "Recover Username">
 	</form>
+	<br>
+	<a href = "index.jsp">Back to Login</a>
 </body>
 </html>
