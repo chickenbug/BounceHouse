@@ -18,6 +18,7 @@ public class CloseAuction extends TimerTask{
 			Connection con = SQLConnector.getConnection();
 			Statement s = con.createStatement();
 			s.executeUpdate("UPDATE Auction SET Completed = 1 WHERE AuctionID = "+ auctionID);
+			con.close();
 			return;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){

@@ -42,10 +42,10 @@ public class ViewAuction extends HttpServlet {
 			
 			Auction a = Auction.findAuction(auctionID);
 			if(a == null) throw new NoSuchElementException();
-			
+						
 			Item i = Item.findItem(a.itemID);
 			if(i == null) throw new NoSuchElementException();
-			
+						
 			request.setAttribute("a", a);
 			request.setAttribute("i", i);
 			request.getRequestDispatcher("WEB-INF/auction.jsp?" + auctionID).forward(request, response);

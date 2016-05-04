@@ -27,7 +27,9 @@ public class Bid {
 					+ " AND B.Amount = (SELECT MAX(AMOUNT) FROM Bid WHERE auctionID = " + auctionID 
 					+ ") AND B.UserID = U.UserID");
 			if(!rs.next()) return null;
-			return rs.getString(1);
+			String maxUname= rs.getString(1);
+			con.close(); 
+			return maxUname;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
 			System.out.println("error finding username");
@@ -59,6 +61,7 @@ public class Bid {
 			s.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			s.executeUpdate();
 			Auction.updateTop(auctionID, amount, userID);
+			c.close();
 			return true;
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

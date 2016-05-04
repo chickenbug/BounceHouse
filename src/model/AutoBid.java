@@ -35,6 +35,7 @@ public class AutoBid {
 						));
 			}
 			if(bidlist.size() == 0) return null;
+			con.close();
 			return bidlist;
 		}
 		catch(IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e){
@@ -51,6 +52,7 @@ public class AutoBid {
 			s.setInt(1, auctionID);
 			s.setInt(2, userID);
 			s.executeUpdate();
+			c.close();
 			return true;
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -69,6 +71,7 @@ public class AutoBid {
 			s.setInt(2, userID);
 			s.setFloat(3, maxval);
 			s.executeUpdate();
+			c.close();
 			return true;
 		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -78,9 +81,10 @@ public class AutoBid {
 	
 	public static boolean runAutobids(int auctionID){
 			ArrayList<AutoBid> bidlist = findAutoBids(auctionID);	
-			float current_wbid = Auction.findWinBid(auctionID);
-			int current_wID = Auction.findWinID(auctionID);
-			if(current_wbid == -1 || bidlist == null || current_wID == -1) return false;
+			Auction a = Auction.findAuction(auctionID);
+			if(a == null || bidlist == null) return false;
+			float current_wbid = a.win_bid;
+			int current_wID = a.winID;
 			
 			boolean possible_autobid = true;
 			while(possible_autobid){
@@ -88,10 +92,10 @@ public class AutoBid {
 				for(int i = 0; i< bidlist.size(); i++){
 					AutoBid b = bidlist.get(i);
 					current_wID = Auction.findWinID(auctionID);
-					if(current_wbid + 1 <= b.maxBid && current_wID != b.userID){
-						Bid.insertBid(auctionID, b.userID , current_wbid+1);
+					if(current_wbid + a.increment <= b.maxBid && current_wID != b.userID){
+						Bid.insertBid(auctionID, b.userID , current_wbid + a.increment);
 						possible_autobid = true;
-						current_wbid += 1;
+						current_wbid += a.increment;
 					}
 				}
 			}

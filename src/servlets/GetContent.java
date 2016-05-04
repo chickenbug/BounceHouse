@@ -91,8 +91,6 @@ public class GetContent extends HttpServlet {
 						+				"<option value = \"bouncinessDESC\">Bounciness High to Low</option>"
 						+				"<option value = \"categoryASC\">Category A to Z</option>"
 						+				"<option value = \"categoryDESC\">Category Z to A</option>"
-						+				"<option value = \"colorASC\">Color A to Z</option>"
-						+				"<option value = \"colorDESC\">Color Z to A</option>"
 						+				"<option value = \"sizeDESC\">Size S to L</option>"
 						+				"<option value = \"sizeASC\">Size L to S</option>"
 						+				"<option value = \"subcategoryASC\">Subcategory A to Z</option>"
@@ -138,10 +136,6 @@ public class GetContent extends HttpServlet {
 				query += "ORDER BY Category ASC;";
 			} else if (request.getParameter("sortBy").equals("categoryDESC")) { //Category Z to A
 				query += "ORDER BY Category DESC;";
-			} else if (request.getParameter("sortBy").equals("colorASC")) { //Color A to Z
-				query += "ORDER BY Color ASC;";
-			} else if (request.getParameter("sortBy").equals("colorDESC")) { // Color Z to A
-				query += "ORDER BY Color DESC;";
 			} else if (request.getParameter("sortBy").equals("sizeASC")) { //Size XS to XL
 				query += "ORDER BY Size ASC;";
 			} else if (request.getParameter("sortBy").equals("sizeDESC")) { //Size XL to XS
@@ -170,9 +164,8 @@ public class GetContent extends HttpServlet {
 									+		"<td><center>" + items.getString("Subcategory") + "</center></td>"
 									+ 		"<td><center>" + items.getString("Description") + "</center></td>"
 									+ 		"<td><center>" + items.getInt("Bounciness") + "</center></td>"
-									+		"<td><center>" + items.getString("Color") + "</center></td>"
 									+		"<td><center>" + items.getString("Size") + "</center></td>"
-									+		"<td><center><a href = \"auction?auctionID=" + auction.getInt("AuctionID") + "\">View Auction For This Item</a></center></td>"
+									+		"<td><center><a href = \"auction?" + auction.getInt("AuctionID") + "\">View Auction For This Item</a></center></td>"
 									+ 	"</tr>" 
 						);
 					}

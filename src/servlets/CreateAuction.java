@@ -52,7 +52,9 @@ public class CreateAuction extends HttpServlet {
 				ResultSet r = s.getGeneratedKeys();
 				
 				r.next();
-				return r.getInt(1);
+				int itemID = r.getInt(1);
+				con.close();
+				return itemID;
 			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 				response.sendRedirect("error.html");
@@ -61,27 +63,31 @@ public class CreateAuction extends HttpServlet {
     }
     
     // Inserts item into auction table returns zeor in case things go pear shaped
-    private int insert_auction(int ItemID, float minbid, Timestamp t, int UserID, HttpServletResponse response) throws IOException{
-			try {
-				Connection con = SQLConnector.getConnection();
-				String sql = "INSERT INTO Auction (CloseDate, ItemID, MinBid, UserID) VALUES (?,?,?,?)";
-				PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-				s.setTimestamp(1, t);
-				s.setInt(2, ItemID);
-				s.setFloat(3, minbid);
-				s.setInt(4, UserID);
-				s.executeUpdate();
-				
-				ResultSet r = s.getGeneratedKeys();
-				r.next();
-				return r.getInt(1);
-				
-				
-			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
-				e.printStackTrace();
-				response.sendRedirect("error.html");
-			}
-			return 0;
+    private int insert_auction(int ItemID, float minbid, Timestamp t,
+    		int UserID, int increment, HttpServletResponse response) throws IOException{
+		try {
+			Connection con = SQLConnector.getConnection();
+			String sql = "INSERT INTO Auction (CloseDate, ItemID, MinBid, UserID, BidIncrement) VALUES (?,?,?,?,?)";
+			PreparedStatement s = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			s.setTimestamp(1, t);
+			s.setInt(2, ItemID);
+			s.setFloat(3, minbid);
+			s.setInt(4, UserID);
+			s.setInt(5, increment);
+			s.executeUpdate();
+			
+			ResultSet r = s.getGeneratedKeys();
+			r.next();
+			int auctionID = r.getInt(1);
+			con.close();
+			return auctionID;
+			
+			
+		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			response.sendRedirect("error.html");
+		}
+		return 0;
     }
 
 	/**
@@ -111,6 +117,7 @@ public class CreateAuction extends HttpServlet {
 			String title = request.getParameter("title");
 			String description = request.getParameter("description");		
 			float minbid = Float.parseFloat(request.getParameter("minbid"));
+			int increment = Integer.parseInt(request.getParameter("increment"));
 			int userID = (Integer)request.getSession().getAttribute("userID");
 			
 			SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -122,7 +129,9 @@ public class CreateAuction extends HttpServlet {
 			}
 			else{
 				int ItemID = insert_item(bounce,category,size,subcategory,title,description, response);
-				int AuctionID = insert_auction(ItemID, minbid, t, userID, response);
+				int AuctionID = insert_auction(ItemID, minbid, t, userID, increment, response);
+				if(ItemID == 0 || AuctionID == 0) return;
+				
 				Timer time = new Timer();
 				time.schedule(new CloseAuction(AuctionID), t);
 				response.sendRedirect("auction?" + AuctionID);

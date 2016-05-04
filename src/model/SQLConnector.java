@@ -20,7 +20,7 @@ public class SQLConnector {
 	/**
 	 * Database amdin password.
 	 */
-	private static final String dbPassword = "sqlpls7";
+	private static final String dbPassword = "pass";
 	/**
 	 * SQLConnector instance connection object.
 	 */
@@ -36,7 +36,7 @@ public class SQLConnector {
 	/**
 	 * Maximum number of simultaneous live connection on Database.
 	 */
-	private final static int maxConnections = 150;
+	private final static int maxConnections = 500;
 	
 	/**
 	 * SQLConnector constructor.
