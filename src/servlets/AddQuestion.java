@@ -98,8 +98,6 @@ public class AddQuestion extends HttpServlet {
 			response.sendRedirect("questionSubmitted.jsp");
 			return;
 			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 

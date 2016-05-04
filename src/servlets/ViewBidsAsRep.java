@@ -115,9 +115,7 @@ public class ViewBidsAsRep extends HttpServlet {
 					connection.close();
 				}
 			} catch (SQLException sql) {
-				return;
 			} catch (Exception e) {
-				return;
 			}
 
 			//Write closing html for page.

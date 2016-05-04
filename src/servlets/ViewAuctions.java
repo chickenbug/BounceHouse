@@ -68,6 +68,7 @@ public class ViewAuctions extends HttpServlet {
 					 * Process request and output HTML.
 					 */
 					while (auctions.next()) {
+						int auctionID = auctions.getInt("AuctionID");
 						items = getItems.executeQuery("SELECT Category,Subcategory,Description,Image FROM Item WHERE ItemID =" + auctions.getString("ItemID"));
 						
 						while (items.next()) {

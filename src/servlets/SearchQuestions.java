@@ -145,13 +145,11 @@ public class SearchQuestions extends HttpServlet {
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
-				return;
 			} catch (Exception e) {
 				/*
 				 * Do nothing. The page has already loaded - no need to let the user know
 				 * there was an error that doesn't affect them.
 				 */
-				return;
 			}
 
 			//Write closing html for page.
